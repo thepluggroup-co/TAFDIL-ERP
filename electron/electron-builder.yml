@@ -1,0 +1,58 @@
+appId: cm.tafdil.erp
+productName: TAFDIL ERP
+copyright: "Copyright © 2026 TAFDIL SARL"
+
+directories:
+  output: dist
+  buildResources: assets
+
+files:
+  - main.js
+  - preload.js
+  - src/**/*
+  - "!src/**/*.test.js"
+
+extraMetadata:
+  main: main.js
+
+win:
+  target:
+    - target: nsis
+      arch: [x64]
+    - target: portable
+      arch: [x64]
+  icon: assets/icon.ico
+  # signingHashAlgorithms: [sha256]   # Décommenter avec certificat de signature
+
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  installerIcon: assets/icon.ico
+  uninstallerIcon: assets/icon.ico
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: TAFDIL ERP
+  runAfterFinish: true
+
+mac:
+  target:
+    - target: dmg
+      arch: [x64, arm64]
+  icon: assets/icon.icns
+  category: public.app-category.business
+  # identity: "Developer ID Application: TAFDIL SARL"   # Avec certificat Apple
+
+dmg:
+  title: "TAFDIL ERP ${version}"
+  iconSize: 80
+  contents:
+    - x: 130
+      y: 220
+    - x: 410
+      y: 220
+      type: link
+      path: /Applications
+
+publish:
+  provider: generic
+  url: https://releases.tafdil.cm/desktop

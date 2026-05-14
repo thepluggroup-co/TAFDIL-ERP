@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --tafdil-primary: #1a3a5c;
+  --tafdil-accent:  #e8740c;
+}
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  @apply antialiased text-gray-900;
+}
+
+/* Scrollbar slim */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { @apply bg-gray-100; }
+::-webkit-scrollbar-thumb { @apply bg-gray-400 rounded-full; }

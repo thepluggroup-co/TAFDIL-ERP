@@ -1,0 +1,34 @@
+﻿# Node
+node_modules/
+npm-debug.log*
+yarn-error.log
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# Build
+dist/
+build/
+.vite/
+
+# Logs
+logs/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Expo
+mobile/.expo/
+mobile/android/
+mobile/ios/
+
+# PDF temp
+backend/tmp/

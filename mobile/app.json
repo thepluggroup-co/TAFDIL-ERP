@@ -1,0 +1,57 @@
+{
+  "expo": {
+    "name": "TAFDIL ERP",
+    "slug": "tafdil-erp",
+    "version": "1.0.0",
+    "orientation": "default",
+    "icon": "./assets/icon-tafdil.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#1a3a5c"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "cm.tafdil.erp",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Scanner les codes-barres des produits et photographier les chantiers",
+        "NSPhotoLibraryUsageDescription": "Joindre des photos aux rapports de chantier",
+        "NSLocationWhenInUseUsageDescription": "Géolocaliser automatiquement les rapports de chantier"
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#1a3a5c"
+      },
+      "package": "cm.tafdil.erp",
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "VIBRATE",
+        "RECEIVE_BOOT_COMPLETED",
+        "INTERNET",
+        "ACCESS_FINE_LOCATION"
+      ],
+      "googleServicesFile": "./google-services.json"
+    },
+    "plugins": [
+      "expo-camera",
+      "expo-barcode-scanner",
+      "expo-location",
+      "expo-notifications",
+      "expo-sqlite",
+      ["expo-image-picker", { "photosPermission": "Accéder à la galerie pour les rapports chantier" }]
+    ],
+    "scheme": "tafdil",
+    "extra": {
+      "supabaseUrl": "",
+      "supabaseAnonKey": "",
+      "apiUrl": "",
+      "eas": { "projectId": "replace-with-eas-project-id" }
+    }
+  }
+}
