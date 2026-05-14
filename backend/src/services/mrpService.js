@@ -127,9 +127,7 @@ async function getPlanning({ date_debut, date_fin }) {
       id, reference, type_produit, statut, priorite,
       dimensions, heures_estimees,
       date_planifiee_debut, date_planifiee_fin,
-      technicien:technicien_assigne_id (
-        id, email, raw_user_meta_data
-      )
+      technicien_assigne_id
     `)
     .gte('date_planifiee_debut', debut)
     .lte('date_planifiee_debut', fin)
@@ -194,8 +192,8 @@ async function listeOF({ statut, technicien_id, date_debut, date_fin, page = 1, 
       date_planifiee_debut, date_planifiee_fin,
       date_debut_reel, date_fin_reel,
       observations_atelier,
-      technicien:technicien_assigne_id (id, email, raw_user_meta_data),
-      commande:commande_id (id, numero),
+      technicien_assigne_id,
+      commande_id,
       devis:devis_id (id, reference, montant_ttc)
     `, { count: 'exact' })
     .order('created_at', { ascending: false })

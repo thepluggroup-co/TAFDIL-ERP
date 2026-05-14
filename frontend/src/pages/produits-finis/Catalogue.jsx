@@ -35,10 +35,6 @@ export default function Catalogue() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold text-[#1a3a5c]">Catalogue Produits Finis</h1>
-        <button onClick={() => setShowDevis(true)}
-          className="px-4 py-2 bg-[#e8740c] text-white text-sm font-semibold rounded-lg hover:bg-[#cf6509] transition-colors">
-          + Commande sur mesure
-        </button>
       </div>
 
       {/* Filtres type */}

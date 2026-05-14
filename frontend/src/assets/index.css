@@ -2,17 +2,85 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Brand tokens ──────────────────────────────────────────────────────────── */
 :root {
   --tafdil-primary: #1a3a5c;
   --tafdil-accent:  #e8740c;
 }
 
+/* ── Base ──────────────────────────────────────────────────────────────────── */
 body {
   font-family: 'Inter', system-ui, sans-serif;
   @apply antialiased text-gray-900;
 }
 
-/* Scrollbar slim */
-::-webkit-scrollbar { width: 5px; height: 5px; }
-::-webkit-scrollbar-track { @apply bg-gray-100; }
-::-webkit-scrollbar-thumb { @apply bg-gray-400 rounded-full; }
+/* ── Scrollbar slim ────────────────────────────────────────────────────────── */
+::-webkit-scrollbar            { width: 4px; height: 4px; }
+::-webkit-scrollbar-track      { @apply bg-transparent; }
+::-webkit-scrollbar-thumb      { @apply bg-gray-300 rounded-full; }
+::-webkit-scrollbar-thumb:hover{ @apply bg-gray-400; }
+
+/* ── Hide scrollbar (sidebar nav) ─────────────────────────────────────────── */
+/* scrollbar-width is a progressive enhancement; webkit fallback handles older browsers */
+.scrollbar-hide {
+  -ms-overflow-style: none;     /* IE / Edge Legacy */
+}
+.scrollbar-hide::-webkit-scrollbar { display: none; } /* Chrome, Safari, newer Edge */
+@supports (scrollbar-width: none) {
+  .scrollbar-hide { scrollbar-width: none; }           /* Firefox + Chrome 121+ */
+}
+
+/* ── Page content padding ─────────────────────────────────────────────────── */
+main > div {
+  @apply p-6;
+}
+
+/* ── Animated underline for active sidebar link ───────────────────────────── */
+@layer components {
+  .nav-active-indicator {
+    @apply relative;
+  }
+  .nav-active-indicator::before {
+    content: '';
+    @apply absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-4 bg-[#e8740c] rounded-full;
+  }
+}
+
+/* ── Smooth focus ring ────────────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--tafdil-accent);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* ── Card hover lift ──────────────────────────────────────────────────────── */
+@layer utilities {
+  .card-hover {
+    @apply transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md;
+  }
+}
+
+/* ── Spin animation (loading state) ───────────────────────────────────────── */
+/* transform: rotate is compositor-only — no paint cost */
+@keyframes spin-slow {
+  to { transform: rotate(360deg); }
+}
+.animate-spin-slow {
+  will-change: transform;
+  animation: spin-slow 2s linear infinite;
+}
+
+/* ── Pulse dot — opacity only (compositor layer, no paint) ────────────────── */
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+.animate-pulse-dot {
+  will-change: opacity;
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+/* ── Framer-motion page wrapper — prevent height collapse during animation ── */
+[data-framer-component-type] {
+  min-height: 0;
+}

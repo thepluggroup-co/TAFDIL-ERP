@@ -9,6 +9,7 @@ export const quincaillerieApi = {
   // Stock
   getStockDispo: (id) => api.get(`${BASE}/stock-dispo/${id}`),
   getStockConflits: () => api.get(`${BASE}/stock-conflits`),
+  getMouvements: (id, params) => api.get(`${BASE}/mouvements/${id}`, { params }),
 
   // Vente
   creerVente: (payload) => api.post(`${BASE}/vente-comptoir`, payload),

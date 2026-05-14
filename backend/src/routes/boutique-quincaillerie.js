@@ -22,7 +22,6 @@ router.post(
     body('lignes.*.produit_id').isUUID(),
     body('lignes.*.quantite').isFloat({ gt: 0 }),
     body('lignes.*.remise_pct').optional().isFloat({ min: 0, max: 100 }),
-    body('vendeur_id').isUUID(),
   ],
   validate,
   async (req, res, next) => {
@@ -33,10 +32,12 @@ router.post(
         client_nom = null,
         mode_paiement,
         lignes,
-        vendeur_id,
         notes = null,
         remise_dg_pct = 0,
       } = req.body;
+
+      // vendeur_id déduit de l'utilisateur authentifié (plus sûr que de le recevoir du body)
+      const vendeur_id = req.user.id;
 
       // 1. Vérification disponibilité stock
       const dispo = await stockService.verifierDisponibilite(lignes);
@@ -108,8 +109,38 @@ router.post(
         throw new Error(`Insertion lignes : ${errLignes.message}`);
       }
 
-      // 6. Décrémentation du stock
-      await stockService.decrementerStock(lignesAvecPrix);
+      // 6. Décrémentation du stock via verrou consultatif (advisory lock)
+      // Empêche les conflits simultanés ERP ↔ e-commerce sur le même article
+      for (const ligne of lignesAvecPrix) {
+        const { data: lockResult, error: lockErr } = await supabase.rpc(
+          'fn_decrement_stock_secure',
+          {
+            p_produit_id: ligne.produit_id,
+            p_quantite:   ligne.quantite,
+            p_source:     'ERP',
+          }
+        );
+        if (lockErr) throw new Error(`Erreur verrouillage stock : ${lockErr.message}`);
+        const row = lockResult?.[0];
+        if (row && !row.ok) {
+          // Rollback vente si stock insuffisant après verrou
+          await supabase.from('ventes_comptoir_lignes').delete().eq('vente_id', venteId);
+          await supabase.from('ventes_comptoir').delete().eq('id', venteId);
+          return res.status(409).json({ success: false, message: row.message });
+        }
+      }
+
+      // Enregistrer mouvements de sortie
+      await supabase.from('mouvements_stock').insert(
+        lignesAvecPrix.map(l => ({
+          produit_id:     l.produit_id,
+          type_mouvement: 'SORTIE',
+          quantite:       l.quantite,
+          source_canal:   'ERP',
+          reference_doc:  numero,
+          user_id:        vendeur_id,
+        }))
+      );
 
       res.status(201).json({
         success: true,
@@ -126,11 +157,11 @@ router.post(
 
 // ============================================================
 // GET /catalogue-public
-// Produits disponibles au public (avec filtres)
+// Produits disponibles au public (avec filtres catégorie TAFDIL)
 // ============================================================
 router.get('/catalogue-public', async (req, res, next) => {
   try {
-    const { categorie, stock_min, search, page = 1, limit = 50 } = req.query;
+    const { categorie, categorie_detail, stock_min, search, page = 1, limit = 50 } = req.query;
     const offset = (parseInt(page) - 1) * parseInt(limit);
 
     let q = supabase
@@ -140,9 +171,10 @@ router.get('/catalogue-public', async (req, res, next) => {
       .gt('stock_dispo_boutique', 0)
       .order('designation');
 
-    if (categorie) q = q.eq('categorie', categorie);
-    if (stock_min) q = q.gte('stock_dispo_boutique', parseFloat(stock_min));
-    if (search) q = q.ilike('designation', `%${search}%`);
+    if (categorie)        q = q.eq('categorie', categorie);
+    if (categorie_detail) q = q.eq('categorie_detail', categorie_detail);
+    if (stock_min)        q = q.gte('stock_dispo_boutique', parseFloat(stock_min));
+    if (search)           q = q.ilike('designation', `%${search}%`);
 
     q = q.range(offset, offset + parseInt(limit) - 1);
 
@@ -159,6 +191,41 @@ router.get('/catalogue-public', async (req, res, next) => {
     next(err);
   }
 });
+
+// ============================================================
+// GET /mouvements/:id
+// Historique entrées/sorties d'un produit
+// ============================================================
+router.get(
+  '/mouvements/:id',
+  [param('id').isUUID()],
+  validate,
+  async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const { limit = 50, type_mouvement } = req.query;
+
+      let q = supabase
+        .from('mouvements_stock')
+        .select('*')
+        .eq('produit_id', id)
+        .order('created_at', { ascending: false })
+        .limit(parseInt(limit));
+
+      if (type_mouvement) q = q.eq('type_mouvement', type_mouvement);
+
+      const { data, error } = await q;
+      if (error) throw new Error(error.message);
+
+      const entrees = data.filter(m => m.type_mouvement === 'ENTREE').reduce((s, m) => s + +m.quantite, 0);
+      const sorties = data.filter(m => m.type_mouvement === 'SORTIE').reduce((s, m) => s + +m.quantite, 0);
+
+      res.json({ success: true, mouvements: data, totaux: { entrees, sorties } });
+    } catch (err) {
+      next(err);
+    }
+  }
+);
 
 // ============================================================
 // GET /stock-dispo/:id

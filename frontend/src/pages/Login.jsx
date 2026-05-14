@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import toast from 'react-hot-toast';
+import TafdilLogo from '@/components/shared/TafdilLogo';
 
 export default function Login() {
   const [email, setEmail]       = useState('');
@@ -34,8 +35,9 @@ export default function Login() {
     <div className="min-h-screen bg-[#1a3a5c] flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8">
         {/* Logo */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold">
+        <div className="flex flex-col items-center mb-8">
+          <TafdilLogo size={64} className="mb-3" />
+          <h1 className="text-2xl font-bold">
             <span className="text-[#1a3a5c]">TAFDIL</span>
             <span className="text-[#e8740c]"> ERP</span>
           </h1>
