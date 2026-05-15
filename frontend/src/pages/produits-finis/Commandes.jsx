@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { produitsFiniApi } from '@/api/produitsFinis';
 import { supabase } from '@/lib/supabase';
 import XAFPrice from '@/components/shared/XAFPrice';
@@ -72,13 +72,13 @@ export default function Commandes() {
       {/* En-tête */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-[#1a3a5c]">Commandes</h1>
+          <h1 className="text-xl font-bold text-[#E30613]">Commandes</h1>
           <p className="text-xs text-gray-400 mt-0.5">
             Produits finis & quincaillerie — plateforme e-commerce
           </p>
         </div>
         <button onClick={fetchCommandes}
-          className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-[#1a3a5c] border border-gray-200 rounded-lg px-3 py-1.5 transition-colors">
+          className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-[#E30613] border border-gray-200 rounded-lg px-3 py-1.5 transition-colors">
           <RefreshCw size={13} /> Actualiser
         </button>
       </div>
@@ -91,7 +91,7 @@ export default function Commandes() {
             <button key={t.key} onClick={() => setTab(t.key)}
               className={`flex items-center gap-1.5 px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
                 tab === t.key
-                  ? 'bg-white text-[#1a3a5c] shadow-sm'
+                  ? 'bg-white text-[#E30613] shadow-sm'
                   : 'text-gray-500 hover:text-gray-700'
               }`}>
               {Icon && <Icon size={13} />}
@@ -130,7 +130,7 @@ export default function Commandes() {
               </tr>
             ) : commandes.map(c => (
               <tr key={c.id} className="hover:bg-gray-50 transition-colors">
-                <td className="px-4 py-2.5 font-mono text-xs font-semibold text-[#1a3a5c]">
+                <td className="px-4 py-2.5 font-mono text-xs font-semibold text-[#E30613]">
                   {c.numero}
                 </td>
                 <td className="px-4 py-2.5">
@@ -167,13 +167,13 @@ export default function Commandes() {
                   <div className="flex items-center gap-2">
                     {c.devis_id && (
                       <button onClick={() => openDevisPdf(c.devis_id)} title="Voir devis PDF"
-                        className="text-gray-400 hover:text-[#1a3a5c] transition-colors">
+                        className="text-gray-400 hover:text-[#E30613] transition-colors">
                         <FileText size={14} />
                       </button>
                     )}
                     {c.statut === 'PRET' && !c.bon_livraison_id && (
                       <button onClick={() => handleBL(c)} title="Créer bon de livraison"
-                        className="text-gray-400 hover:text-[#e8740c] transition-colors">
+                        className="text-gray-400 hover:text-[#E30613] transition-colors">
                         <Truck size={14} />
                       </button>
                     )}

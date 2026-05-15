@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import TafdilLogo from '@/components/shared/TafdilLogo';
@@ -101,7 +101,7 @@ const linkCls = ({ isActive }) =>
   clsx(
     'flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors duration-150',
     isActive
-      ? 'bg-[#e8740c] text-white font-semibold shadow-sm'
+      ? 'bg-[#E30613] text-white font-semibold shadow-sm'
       : 'text-gray-300 hover:bg-white/10 hover:text-white'
   );
 
@@ -109,7 +109,7 @@ const subLinkCls = ({ isActive }) =>
   clsx(
     'flex items-center gap-2.5 px-3 py-1.5 rounded-md text-sm transition-colors duration-150',
     isActive
-      ? 'bg-[#e8740c]/90 text-white font-semibold'
+      ? 'bg-[#E30613]/90 text-white font-semibold'
       : 'text-gray-400 hover:bg-white/10 hover:text-white'
   );
 
@@ -221,7 +221,7 @@ export default function Sidebar() {
       initial={{ x: -240, opacity: 0 }}
       animate={{ x: 0,    opacity: 1 }}
       transition={{ type: 'spring', stiffness: 320, damping: 32, mass: 0.8 }}
-      className="w-60 bg-[#1a3a5c] flex flex-col shrink-0 h-full shadow-xl"
+      className="w-60 bg-[#111111] flex flex-col shrink-0 h-full shadow-xl"
     >
       {/* ── Logo ── */}
       <div className="px-4 py-4 border-b border-white/10 shrink-0">
@@ -234,7 +234,7 @@ export default function Sidebar() {
           <TafdilLogo size={36} />
           <div className="leading-none">
             <span className="text-white font-bold text-lg tracking-wide">TAFDIL</span>
-            <span className="text-[#e8740c] font-bold text-lg"> ERP</span>
+            <span className="text-[#E30613] font-bold text-lg"> ERP</span>
           </div>
         </motion.div>
       </div>

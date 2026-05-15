@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { useStockStore } from '@/stores/useStockStore';
 import { useCartStore } from '@/stores/useCartStore';
 import CaisseForm from '@/components/quincaillerie/CaisseForm';
@@ -49,14 +49,14 @@ export default function VenteComptoir() {
 
         {/* Titre + recherche */}
         <div className="flex items-center gap-3">
-          <h1 className="text-xl font-bold text-[#1a3a5c] shrink-0">Vente comptoir</h1>
+          <h1 className="text-xl font-bold text-[#E30613] shrink-0">Vente comptoir</h1>
           <div className="relative flex-1 max-w-xs">
             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Rechercher un produit…"
-              className="w-full pl-8 pr-3 py-1.5 text-sm border border-gray-200 rounded-lg focus:ring-1 focus:ring-[#1a3a5c] outline-none"
+              className="w-full pl-8 pr-3 py-1.5 text-sm border border-gray-200 rounded-lg focus:ring-1 focus:ring-[#E30613] outline-none"
             />
           </div>
         </div>
@@ -69,8 +69,8 @@ export default function VenteComptoir() {
               onClick={() => setCategorie(c.key)}
               className={`px-3 py-1 text-xs rounded-full border transition-colors ${
                 categorie === c.key
-                  ? 'bg-[#1a3a5c] text-white border-[#1a3a5c]'
-                  : 'text-gray-600 border-gray-200 hover:border-[#1a3a5c] hover:text-[#1a3a5c]'
+                  ? 'bg-[#E30613] text-white border-[#E30613]'
+                  : 'text-gray-600 border-gray-200 hover:border-[#E30613] hover:text-[#E30613]'
               }`}
             >
               {c.label}
@@ -89,9 +89,9 @@ export default function VenteComptoir() {
               <button
                 key={p.id}
                 onClick={() => addLigne(p)}
-                className="text-left bg-white border border-gray-200 rounded-xl p-3 hover:border-[#e8740c] hover:shadow-sm transition-all group"
+                className="text-left bg-white border border-gray-200 rounded-xl p-3 hover:border-[#E30613] hover:shadow-sm transition-all group"
               >
-                <p className="text-sm font-medium text-gray-800 leading-tight mb-0.5 group-hover:text-[#1a3a5c] line-clamp-2">
+                <p className="text-sm font-medium text-gray-800 leading-tight mb-0.5 group-hover:text-[#E30613] line-clamp-2">
                   {p.designation}
                 </p>
                 <p className="text-xs text-gray-400 mb-1 font-mono">{p.reference}</p>
@@ -101,7 +101,7 @@ export default function VenteComptoir() {
                   </span>
                 )}
                 <div className="flex items-end justify-between">
-                  <XAFPrice amount={p.prix_public} size="sm" className="text-[#e8740c]" />
+                  <XAFPrice amount={p.prix_public} size="sm" className="text-[#E30613]" />
                   <StockBadge dispo={p.stock_dispo_boutique} unite={p.unite} />
                 </div>
               </button>
@@ -117,7 +117,7 @@ export default function VenteComptoir() {
 
       {/* ── Caisse ─────────────────────────────────────────── */}
       <div className="w-80 bg-white border border-gray-200 rounded-xl p-4 flex flex-col shrink-0 shadow-sm">
-        <h2 className="font-bold text-[#1a3a5c] text-sm mb-3 pb-2 border-b border-gray-100">
+        <h2 className="font-bold text-[#E30613] text-sm mb-3 pb-2 border-b border-gray-100">
           Panier
         </h2>
         <CaisseForm onSuccess={refetch} />

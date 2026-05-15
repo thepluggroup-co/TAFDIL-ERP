@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { quincaillerieApi } from '@/api/quincaillerie';
 import { produitsFiniApi } from '@/api/produitsFinis';
 import StatCard from '@/components/shared/StatCard';
@@ -26,7 +26,7 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-[#1a3a5c]">
+      <h1 className="text-2xl font-bold text-[#E30613]">
         Tableau de bord — {dayjs().format('DD MMMM YYYY')}
       </h1>
 
@@ -70,7 +70,7 @@ export default function Dashboard() {
             <XAxis dataKey="name" tick={{ fontSize: 12 }} />
             <YAxis tick={{ fontSize: 11 }} tickFormatter={v => `${(v/1000).toFixed(0)}k`} />
             <Tooltip formatter={(v) => new Intl.NumberFormat('fr-CM').format(v) + ' XAF'} />
-            <Bar dataKey="ca" fill="#1a3a5c" radius={[4,4,0,0]} name="CA" />
+            <Bar dataKey="ca" fill="#E30613" radius={[4,4,0,0]} name="CA" />
           </BarChart>
         </ResponsiveContainer>
       </div>
@@ -82,7 +82,7 @@ export default function Dashboard() {
           <div className="grid grid-cols-3 gap-4 text-center text-sm">
             <div>
               <p className="text-gray-500">CA produits finis</p>
-              <XAFPrice amount={statsProd.ca_total} size="lg" className="text-[#1a3a5c]" />
+              <XAFPrice amount={statsProd.ca_total} size="lg" className="text-[#E30613]" />
             </div>
             <div>
               <p className="text-gray-500">Marge brute</p>
@@ -90,7 +90,7 @@ export default function Dashboard() {
             </div>
             <div>
               <p className="text-gray-500">Délai moyen</p>
-              <p className="text-xl font-bold text-[#e8740c]">
+              <p className="text-xl font-bold text-[#E30613]">
                 {statsProd.delai_moyen_jours ?? '—'} <span className="text-sm font-normal text-gray-500">j.</span>
               </p>
             </div>

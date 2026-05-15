@@ -1,4 +1,4 @@
-import { useForm } from 'react-hook-form';
+﻿import { useForm } from 'react-hook-form';
 import { produitsFiniApi } from '@/api/produitsFinis';
 import { useState } from 'react';
 import XAFPrice from '@/components/shared/XAFPrice';
@@ -44,9 +44,9 @@ export default function DevisForm({ onSuccess }) {
         <span>Montant HT :</span>      <XAFPrice amount={result.montant_ht} size="sm" />
         <span>TVA :</span>             <XAFPrice amount={result.montant_tva} size="sm" />
         <span className="font-semibold">Total TTC :</span>
-        <XAFPrice amount={result.montant_total} size="md" className="text-[#1a3a5c]" />
+        <XAFPrice amount={result.montant_total} size="md" className="text-[#E30613]" />
         <span className="text-amber-700 font-semibold">Acompte ({result.acompte_pct}%) :</span>
-        <XAFPrice amount={result.montant_acompte} size="md" className="text-[#e8740c]" />
+        <XAFPrice amount={result.montant_acompte} size="md" className="text-[#E30613]" />
         <span>Validité :</span>        <span>{result.date_validite}</span>
         <span>Délai fabrication :</span><span>{result.delai_fabrication_jours} jours</span>
       </div>
@@ -105,7 +105,7 @@ export default function DevisForm({ onSuccess }) {
         </div>
       </div>
       <button type="submit" disabled={submitting}
-        className="w-full py-2.5 bg-[#e8740c] hover:bg-[#cf6509] disabled:opacity-50 text-white font-bold rounded-xl transition-colors">
+        className="w-full py-2.5 bg-[#E30613] hover:bg-[#B80010] disabled:opacity-50 text-white font-bold rounded-xl transition-colors">
         {submitting ? 'Génération devis…' : 'Générer le devis'}
       </button>
     </form>

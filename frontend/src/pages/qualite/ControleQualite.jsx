@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
+﻿import { useState, useEffect, useCallback } from 'react';
 
-const C = { primary: '#1a3a5c', accent: '#e8740c' };
+const C = { primary: '#E30613', accent: '#E30613' };
 
 const DECISION_CONFIG = {
   VALIDE:   { color: 'bg-green-100 text-green-800',  icon: '✓' },

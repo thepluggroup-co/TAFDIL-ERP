@@ -1,7 +1,7 @@
-import { useState, useEffect, useCallback } from 'react';
+﻿import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const C = { primary: '#1a3a5c', accent: '#e8740c' };
+const C = { primary: '#E30613', accent: '#E30613' };
 
 const STATUT_COLOR = {
   PLANIFIE: 'bg-blue-100 text-blue-800',

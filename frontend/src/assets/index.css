@@ -1,11 +1,11 @@
-@tailwind base;
+﻿@tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* ── Brand tokens ──────────────────────────────────────────────────────────── */
 :root {
-  --tafdil-primary: #1a3a5c;
-  --tafdil-accent:  #e8740c;
+  --tafdil-primary: #E30613;
+  --tafdil-accent:  #E30613;
 }
 
 /* ── Base ──────────────────────────────────────────────────────────────────── */
@@ -42,7 +42,7 @@ main > div {
   }
   .nav-active-indicator::before {
     content: '';
-    @apply absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-4 bg-[#e8740c] rounded-full;
+    @apply absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-4 bg-[#E30613] rounded-full;
   }
 }
 

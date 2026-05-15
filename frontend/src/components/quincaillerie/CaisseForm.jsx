@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+﻿import { useMemo, useState } from 'react';
 import { useCartStore, selectTotaux } from '@/stores/useCartStore';
 import { quincaillerieApi } from '@/api/quincaillerie';
 import XAFPrice from '@/components/shared/XAFPrice';
@@ -77,7 +77,7 @@ export default function CaisseForm({ onSuccess }) {
         value={clientNom}
         onChange={e => setClientNom(e.target.value)}
         placeholder="Nom client (optionnel)"
-        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-1 focus:ring-[#1a3a5c] outline-none"
+        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-1 focus:ring-[#E30613] outline-none"
       />
 
       {/* Lignes panier — calcul en temps réel */}
@@ -95,7 +95,7 @@ export default function CaisseForm({ onSuccess }) {
                   {l.designation}
                 </p>
                 <div className="flex items-center gap-2 mt-0.5">
-                  <XAFPrice amount={l.prix_unitaire} size="sm" className="text-[#e8740c]" />
+                  <XAFPrice amount={l.prix_unitaire} size="sm" className="text-[#E30613]" />
                   {l.remise_pct > 0 && (
                     <span className="text-xs text-green-600 font-medium">−{l.remise_pct}%</span>
                   )}
@@ -117,17 +117,17 @@ export default function CaisseForm({ onSuccess }) {
                   onClick={() => l.quantite > 1
                     ? updateQte(l.produit_id, l.quantite - 1)
                     : removeLigne(l.produit_id)}
-                  className="w-6 h-6 flex items-center justify-center rounded border border-gray-300 text-gray-600 hover:border-[#1a3a5c] transition-colors">
+                  className="w-6 h-6 flex items-center justify-center rounded border border-gray-300 text-gray-600 hover:border-[#E30613] transition-colors">
                   <Minus size={11} />
                 </button>
                 <input
                   type="number" min="1" value={l.quantite}
                   onChange={e => updateQte(l.produit_id, Math.max(1, +e.target.value))}
-                  className="w-10 text-center border border-gray-300 rounded text-sm py-0.5 focus:outline-none focus:ring-1 focus:ring-[#1a3a5c]"
+                  className="w-10 text-center border border-gray-300 rounded text-sm py-0.5 focus:outline-none focus:ring-1 focus:ring-[#E30613]"
                 />
                 <button
                   onClick={() => updateQte(l.produit_id, l.quantite + 1)}
-                  className="w-6 h-6 flex items-center justify-center rounded border border-gray-300 text-gray-600 hover:border-[#1a3a5c] transition-colors">
+                  className="w-6 h-6 flex items-center justify-center rounded border border-gray-300 text-gray-600 hover:border-[#E30613] transition-colors">
                   <Plus size={11} />
                 </button>
                 <button onClick={() => removeLigne(l.produit_id)}
@@ -152,7 +152,7 @@ export default function CaisseForm({ onSuccess }) {
         </div>
         <div className="flex justify-between font-bold text-base pt-1.5 border-t border-gray-200">
           <span className="text-gray-800">TOTAL TTC</span>
-          <XAFPrice amount={totaux.montant_total} size="lg" className="text-[#1a3a5c]" />
+          <XAFPrice amount={totaux.montant_total} size="lg" className="text-[#E30613]" />
         </div>
       </div>
 
@@ -161,7 +161,7 @@ export default function CaisseForm({ onSuccess }) {
         <select
           value={modePaiement}
           onChange={e => setModePaiement(e.target.value)}
-          className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg appearance-none focus:ring-1 focus:ring-[#1a3a5c] outline-none pr-8"
+          className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg appearance-none focus:ring-1 focus:ring-[#E30613] outline-none pr-8"
         >
           {MODES.map(m => <option key={m} value={m}>{m.replace(/_/g, ' ')}</option>)}
         </select>
@@ -172,7 +172,7 @@ export default function CaisseForm({ onSuccess }) {
       <button
         onClick={submit}
         disabled={submitting || !lignes.length}
-        className="w-full py-3 bg-[#e8740c] hover:bg-[#cf6509] disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-colors"
+        className="w-full py-3 bg-[#E30613] hover:bg-[#B80010] disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-colors"
       >
         <Printer size={16} />
         {submitting ? 'Enregistrement…' : 'Valider & Imprimer'}

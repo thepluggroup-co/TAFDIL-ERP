@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from 'react';
+﻿import { useRef, useEffect, useState } from 'react';
 import SignaturePad from 'signature_pad';
 import { produitsFiniApi } from '@/api/produitsFinis';
 import { RotateCcw, CheckCircle } from 'lucide-react';
@@ -18,7 +18,7 @@ export default function SignatureCapture({ token, blNumero, onSigned }) {
     if (!canvasRef.current) return;
     padRef.current = new SignaturePad(canvasRef.current, {
       backgroundColor: 'rgb(255,255,255)',
-      penColor: '#1a3a5c',
+      penColor: '#E30613',
     });
     const resize = () => {
       const canvas = canvasRef.current;
@@ -71,7 +71,7 @@ export default function SignatureCapture({ token, blNumero, onSigned }) {
           <RotateCcw size={13} /> Effacer
         </button>
         <button onClick={handleConfirm} disabled={submitting}
-          className="flex-1 py-2 bg-[#1a3a5c] hover:bg-[#0f2540] disabled:opacity-50 text-white font-semibold rounded-lg text-sm transition-colors">
+          className="flex-1 py-2 bg-[#E30613] hover:bg-[#B80010] disabled:opacity-50 text-white font-semibold rounded-lg text-sm transition-colors">
           {submitting ? 'Enregistrement…' : 'Confirmer la réception'}
         </button>
       </div>
