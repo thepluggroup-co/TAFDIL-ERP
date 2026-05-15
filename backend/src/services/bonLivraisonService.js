@@ -1,17 +1,17 @@
 const PDFDocument = require('pdfkit');
 const QRCode = require('qrcode');
 const supabase = require('../config/supabase');
+const { TAFDIL } = require('./pdfBranding');
 
 const MARGIN = 50;
 const A4_W = 595.28;
 const A4_H = 841.89;
 const CONTENT_W = A4_W - 2 * MARGIN;
 
-// Palette TAFDIL
-const COLOR_PRIMARY = '#1a3a5c';
-const COLOR_ACCENT  = '#e8740c';
-const COLOR_LIGHT   = '#f5f5f5';
-const COLOR_BORDER  = '#cccccc';
+const COLOR_PRIMARY = TAFDIL.rouge;
+const COLOR_ACCENT  = TAFDIL.rouge;
+const COLOR_LIGHT   = TAFDIL.gris_clair;
+const COLOR_BORDER  = TAFDIL.gris_bord;
 
 /**
  * Génère un PDF A4 pour le bon de livraison.
@@ -64,15 +64,16 @@ async function genererBonLivraisonPDF(blId) {
     doc.rect(0, 0, A4_W, 90).fill(COLOR_PRIMARY);
 
     doc.fillColor('white').font('Helvetica-Bold').fontSize(20)
-      .text(cfg.raison_sociale || 'TAFDIL SARL', MARGIN, 20, { width: CONTENT_W * 0.6 });
-    doc.font('Helvetica').fontSize(9).fillColor('#cce0ff')
-      .text(cfg.ville || 'Douala', MARGIN, 45)
-      .text(`Tél : ${cfg.telephone || ''}`, MARGIN, 57);
+      .text(cfg.raison_sociale || TAFDIL.raison_sociale, MARGIN, 18, { width: CONTENT_W * 0.6 });
+    doc.font('Helvetica').fontSize(8).fillColor('white')
+      .text(TAFDIL.activite, MARGIN, 43)
+      .text(`${cfg.ville || 'Douala'} | Tél : ${cfg.telephone || TAFDIL.tel1}`, MARGIN, 54)
+      .text(TAFDIL.email, MARGIN, 65);
 
-    doc.fillColor(COLOR_ACCENT).font('Helvetica-Bold').fontSize(22)
-      .text('BON DE LIVRAISON', MARGIN + CONTENT_W * 0.55, 18, { width: CONTENT_W * 0.45, align: 'right' });
-    doc.fillColor('white').font('Helvetica').fontSize(11)
-      .text(`N° ${bl.numero}`, MARGIN + CONTENT_W * 0.55, 46, { width: CONTENT_W * 0.45, align: 'right' });
+    doc.fillColor('white').font('Helvetica-Bold').fontSize(20)
+      .text('BON DE LIVRAISON', MARGIN + CONTENT_W * 0.5, 18, { width: CONTENT_W * 0.5, align: 'right' });
+    doc.font('Helvetica').fontSize(11)
+      .text(`N° ${bl.numero}`, MARGIN + CONTENT_W * 0.5, 48, { width: CONTENT_W * 0.5, align: 'right' });
 
     // ── INFOS COMMANDE + CLIENT ───────────────────────────────
     let y = 110;
@@ -203,10 +204,10 @@ async function genererBonLivraisonPDF(blId) {
     }
 
     // ── PIED DE PAGE ─────────────────────────────────────────
-    doc.rect(0, A4_H - 35, A4_W, 35).fill(COLOR_PRIMARY);
-    doc.fillColor('#cce0ff').font('Helvetica').fontSize(7)
+    doc.rect(0, A4_H - 35, A4_W, 35).fill(TAFDIL.noir);
+    doc.fillColor('white').font('Helvetica').fontSize(7)
       .text(
-        `${cfg.raison_sociale || 'TAFDIL SARL'} | ${cfg.ville || 'Douala'} | ${cfg.telephone || ''} — Document généré le ${new Date().toLocaleString('fr-CM')}`,
+        `${TAFDIL.raison_sociale} | ${TAFDIL.adresse} | ${TAFDIL.tel1} | ${TAFDIL.email} — Généré le ${new Date().toLocaleString('fr-CM')}`,
         MARGIN, A4_H - 22, { width: CONTENT_W, align: 'center' }
       );
 

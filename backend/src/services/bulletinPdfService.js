@@ -2,8 +2,9 @@ const PDFDocument = require('pdfkit');
 const QRCode = require('qrcode');
 const supabase = require('../config/supabase');
 const { montantEnLettres } = require('./paieService');
+const { TAFDIL } = require('./pdfBranding');
 
-const C = { primary: '#1a3a5c', accent: '#e8740c', light: '#f5f7fa' };
+const C = { primary: TAFDIL.rouge, accent: TAFDIL.rouge, light: TAFDIL.gris_clair };
 
 const MOIS_FR = [
   '', 'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
@@ -49,16 +50,17 @@ async function buildBulletinPDF(b) {
       const left = 40;
 
       // ── EN-TÊTE ──────────────────────────────────────────────────────────
-      doc.rect(0, 0, doc.page.width, 70).fill(C.primary);
-      doc.fillColor('#fff').font('Helvetica-Bold').fontSize(16)
-        .text('TAFDIL SARL', left, 14);
+      doc.rect(0, 0, doc.page.width, 75).fill(C.primary);
+      doc.fillColor('white').font('Helvetica-Bold').fontSize(18)
+        .text(TAFDIL.raison_sociale, left, 12);
       doc.font('Helvetica').fontSize(8)
-        .text('Fabrication Métallique — Douala, Cameroun', left, 34)
-        .text('RCCM : RC/DLA/XXXX/B/XXXXX  |  NIU : MXXXXXXXXX', left, 46);
+        .text(TAFDIL.activite, left, 36)
+        .text(`${TAFDIL.adresse} | ${TAFDIL.tel1}`, left, 48)
+        .text(`RCCM : ${TAFDIL.rccm}  |  NIU : ${TAFDIL.niu}`, left, 60);
 
-      doc.fillColor(C.accent).font('Helvetica-Bold').fontSize(14)
-        .text('BULLETIN DE PAIE', left + W - 160, 18, { width: 160, align: 'right' });
-      doc.fillColor('#cce').font('Helvetica').fontSize(9)
+      doc.fillColor('white').font('Helvetica-Bold').fontSize(14)
+        .text('BULLETIN DE PAIE', left + W - 160, 16, { width: 160, align: 'right' });
+      doc.font('Helvetica').fontSize(9)
         .text(periode.toUpperCase(), left + W - 160, 38, { width: 160, align: 'right' });
 
       // QR Code vérification (coin haut-droit)
@@ -104,7 +106,7 @@ async function buildBulletinPDF(b) {
 
       // En-têtes colonnes
       y = drawTableHeader('ÉLÉMENTS DE RÉMUNÉRATION', y);
-      doc.rect(left, y, W, 13).fill('#e8eef4');
+      doc.rect(left, y, W, 13).fill(C.light);
       doc.fillColor(C.primary).font('Helvetica-Bold').fontSize(7)
         .text('Désignation', col[0] + 4, y + 3)
         .text('Base', col[1] + 4, y + 3, { width: 95, align: 'right' })
@@ -125,7 +127,7 @@ async function buildBulletinPDF(b) {
       }
 
       // Ligne total brut
-      doc.rect(left, y, W, 16).fill('#1a3a5c');
+      doc.rect(left, y, W, 16).fill(C.primary);
       doc.fillColor('#fff').font('Helvetica-Bold').fontSize(9)
         .text('SALAIRE BRUT', col[0] + 4, y + 4)
         .text(Number(b.salaire_brut).toLocaleString('fr-FR') + ' XAF', col[3] - 4, y + 4, { width: 100, align: 'right' });
@@ -146,7 +148,7 @@ async function buildBulletinPDF(b) {
         shade = !shade;
       }
 
-      doc.rect(left, y, W, 16).fill('#c0392b');
+      doc.rect(left, y, W, 16).fill(TAFDIL.rouge_fonce);
       doc.fillColor('#fff').font('Helvetica-Bold').fontSize(9)
         .text('TOTAL RETENUES', col[0] + 4, y + 4)
         .text(Number(b.total_retenues + b.avances_deduites).toLocaleString('fr-FR') + ' XAF',
@@ -184,10 +186,10 @@ async function buildBulletinPDF(b) {
       doc.rect(left + W / 2, sig_y + 14, W / 2, 50).stroke('#ccc');
 
       // ── FOOTER ────────────────────────────────────────────────────────────
-      doc.rect(0, doc.page.height - 30, doc.page.width, 30).fill(C.primary);
-      doc.fillColor('#fff').fontSize(7).font('Helvetica')
+      doc.rect(0, doc.page.height - 30, doc.page.width, 30).fill(TAFDIL.noir);
+      doc.fillColor('white').fontSize(7).font('Helvetica')
         .text(
-          `TAFDIL SARL — Bulletin de paie confidentiel — Période : ${periode} — Généré le ${new Date().toLocaleDateString('fr-FR')} — Vérification : ${verif_url}`,
+          `${TAFDIL.raison_sociale} — Bulletin de paie confidentiel — Période : ${periode} — Généré le ${new Date().toLocaleDateString('fr-FR')} — Vérification : ${verif_url}`,
           0, doc.page.height - 20, { align: 'center', width: doc.page.width }
         );
 

@@ -1,6 +1,7 @@
 const PDFDocument = require('pdfkit');
 const QRCode = require('qrcode');
 const supabase = require('../config/supabase');
+const { TAFDIL } = require('./pdfBranding');
 
 const TICKET_WIDTH_PT = 163.8; // 58 mm en points PDF (1mm = 2.8346 pt)
 const MARGIN = 8;
@@ -60,17 +61,25 @@ async function genererTicketPDF(vente) {
     let y = MARGIN;
 
     // ---- EN-TÊTE ----
-    doc.font(FONT_BOLD).fontSize(9)
-      .text(cfg.raison_sociale || 'TAFDIL SARL', MARGIN, y, { width: W, align: 'center' });
+    doc.font(FONT_BOLD).fontSize(10)
+      .text(cfg.raison_sociale || TAFDIL.raison_sociale, MARGIN, y, { width: W, align: 'center' });
+    y = doc.y + 1;
+    doc.font(FONT_NORMAL).fontSize(6.5)
+      .text('Fabrication Métallique sur Mesure', MARGIN, y, { width: W, align: 'center' });
+    y = doc.y + 1;
+    doc.text(`Tél : ${cfg.telephone || TAFDIL.tel1}`, MARGIN, y, { width: W, align: 'center' });
+    y = doc.y + 1;
+    doc.text(TAFDIL.email, MARGIN, y, { width: W, align: 'center' });
     y = doc.y + 2;
-    doc.font(FONT_NORMAL).fontSize(7)
-      .text(cfg.ville || 'Douala', MARGIN, y, { width: W, align: 'center' });
+    // Séparateur d'en-tête
+    doc.moveTo(MARGIN, y).lineTo(TICKET_WIDTH_PT - MARGIN, y).dash(2, { space: 2 }).stroke();
+    doc.undash();
+    y = doc.y + 2;
+    doc.font(FONT_BOLD).fontSize(7)
+      .text(`N° ${vente.numero}`, MARGIN, y, { width: W, align: 'center' });
     y = doc.y + 1;
-    doc.text(`Tél : ${cfg.telephone || ''}`, MARGIN, y, { width: W, align: 'center' });
-    y = doc.y + 1;
-    doc.text(`N° ${vente.numero}`, MARGIN, y, { width: W, align: 'center' });
-    y = doc.y + 1;
-    doc.text(new Date(vente.date_vente).toLocaleString('fr-CM'), MARGIN, y, { width: W, align: 'center' });
+    doc.font(FONT_NORMAL).fontSize(6.5)
+      .text(new Date(vente.date_vente).toLocaleString('fr-CM'), MARGIN, y, { width: W, align: 'center' });
 
     // ---- SÉPARATEUR ----
     y = doc.y + 3;
@@ -143,6 +152,9 @@ async function genererTicketPDF(vente) {
     y += 3;
     doc.font(FONT_BOLD).fontSize(8)
       .text('Merci de votre visite !', MARGIN, y, { width: W, align: 'center' });
+    y = doc.y + 2;
+    doc.font(FONT_NORMAL).fontSize(5.5)
+      .text(TAFDIL.email, MARGIN, y, { width: W, align: 'center' });
 
     doc.end();
   });

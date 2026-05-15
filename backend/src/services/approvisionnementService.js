@@ -1,5 +1,6 @@
 const supabase = require('../config/supabase');
 const PDFDocument = require('pdfkit');
+const { TAFDIL } = require('./pdfBranding');
 
 /**
  * Suggestions de réapprovisionnement depuis la vue v_suggestions_reappro.
@@ -93,16 +94,20 @@ async function genererPDFCommandeAchat(commande_id) {
       doc.on('end', () => resolve(Buffer.concat(chunks)));
       doc.on('error', reject);
 
-      const C = { primary: '#1a3a5c', accent: '#e8740c' };
+      const C = { primary: TAFDIL.rouge, accent: TAFDIL.rouge };
 
       // En-tête
-      doc.rect(0, 0, doc.page.width, 80).fill(C.primary);
-      doc.fillColor('#fff').fontSize(22).font('Helvetica-Bold')
-        .text('TAFDIL SARL', 50, 20);
-      doc.fontSize(10).font('Helvetica')
-        .text('Douala, Cameroun | +237 6XX XXX XXX', 50, 48);
-      doc.fillColor(C.accent).fontSize(18).font('Helvetica-Bold')
+      doc.rect(0, 0, doc.page.width, 85).fill(C.primary);
+      doc.fillColor('white').fontSize(20).font('Helvetica-Bold')
+        .text(TAFDIL.raison_sociale, 50, 16);
+      doc.fontSize(9).font('Helvetica')
+        .text(TAFDIL.activite, 50, 42)
+        .text(`${TAFDIL.adresse} | ${TAFDIL.tel1}`, 50, 54)
+        .text(TAFDIL.email, 50, 66);
+      doc.fillColor('white').fontSize(18).font('Helvetica-Bold')
         .text('BON DE COMMANDE', 350, 25, { align: 'right', width: 200 });
+      doc.fillColor('white').fontSize(9).font('Helvetica')
+        .text('FOURNISSEUR', 350, 52, { align: 'right', width: 200 });
 
       doc.fillColor('#333').moveDown(2);
       doc.fontSize(10).font('Helvetica');
@@ -138,7 +143,7 @@ async function genererPDFCommandeAchat(commande_id) {
       let alt = false;
 
       for (const l of cmd.lignes) {
-        if (alt) doc.rect(50, y - 4, 495, 18).fill('#f5f7fa');
+        if (alt) doc.rect(50, y - 4, 495, 18).fill(TAFDIL.gris_clair);
         doc.fillColor('#333')
           .text(l.produit?.reference || '', 55, y, { width: 70 })
           .text(l.produit?.designation || '', 130, y, { width: 185 })
@@ -171,10 +176,12 @@ async function genererPDFCommandeAchat(commande_id) {
       doc.rect(300, sig_y + 15, 150, 50).stroke('#ccc');
 
       // Footer
-      doc.rect(0, doc.page.height - 30, doc.page.width, 30).fill(C.primary);
-      doc.fillColor('#fff').fontSize(8).font('Helvetica')
-        .text('TAFDIL SARL — Fabrication métallique, Douala, Cameroun', 0, doc.page.height - 20,
-          { align: 'center', width: doc.page.width });
+      doc.rect(0, doc.page.height - 30, doc.page.width, 30).fill(TAFDIL.noir);
+      doc.fillColor('white').fontSize(7).font('Helvetica')
+        .text(
+          `${TAFDIL.raison_sociale} | ${TAFDIL.adresse} | ${TAFDIL.tel1} | ${TAFDIL.email}`,
+          0, doc.page.height - 20, { align: 'center', width: doc.page.width }
+        );
 
       doc.end();
     } catch (e) {
