@@ -66,7 +66,7 @@ async function getHistoriqueMatiere(produit_id) {
     .from('bons_sortie_atelier')
     .select(`
       id, reference, quantite, date_sortie, motif,
-      technicien:technicien_id (id, email, raw_user_meta_data)
+      technicien_id
     `)
     .eq('produit_id', produit_id)
     .order('date_sortie', { ascending: false })

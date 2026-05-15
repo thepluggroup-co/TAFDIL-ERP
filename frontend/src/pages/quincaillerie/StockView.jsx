@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useStockStore } from '@/stores/useStockStore';
 import { quincaillerieApi } from '@/api/quincaillerie';
@@ -48,7 +48,7 @@ function MouvementsPanel({ produit, onClose }) {
     >
       <div className="flex items-center justify-between px-5 py-4 border-b">
         <div>
-          <h3 className="font-bold text-[#1a3a5c] text-sm leading-tight">{produit.designation}</h3>
+          <h3 className="font-bold text-[#E30613] text-sm leading-tight">{produit.designation}</h3>
           <p className="text-xs text-gray-400 font-mono mt-0.5">{produit.reference}</p>
         </div>
         <button onClick={onClose} className="text-gray-400 hover:text-gray-700 transition-colors">
@@ -82,8 +82,8 @@ function MouvementsPanel({ produit, onClose }) {
           <button key={t} onClick={() => setTypeFilter(t)}
             className={`px-2 py-0.5 text-xs rounded-full border transition-colors ${
               typeFilter === t
-                ? 'bg-[#1a3a5c] text-white border-[#1a3a5c]'
-                : 'text-gray-500 border-gray-200 hover:border-[#1a3a5c]'
+                ? 'bg-[#E30613] text-white border-[#E30613]'
+                : 'text-gray-500 border-gray-200 hover:border-[#E30613]'
             }`}>
             {t || 'Tous'}
           </button>
@@ -153,9 +153,9 @@ export default function StockView() {
     <div className="space-y-4">
       {/* En-tête */}
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold text-[#1a3a5c]">Stock Quincaillerie</h1>
+        <h1 className="text-xl font-bold text-[#E30613]">Stock Quincaillerie</h1>
         <button onClick={() => { fetchCatalogue(); fetchConflits(); }}
-          className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-[#1a3a5c] border border-gray-200 rounded-lg px-3 py-1.5 transition-colors">
+          className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-[#E30613] border border-gray-200 rounded-lg px-3 py-1.5 transition-colors">
           <RefreshCw size={13} /> Actualiser
         </button>
       </div>
@@ -188,7 +188,7 @@ export default function StockView() {
                   <Search size={10} className="absolute left-1.5 top-1/2 -translate-y-1/2 text-gray-300" />
                   <input value={f.reference} onChange={e => setFilter('reference', e.target.value)}
                     placeholder="Filtrer…"
-                    className="w-full pl-5 pr-1.5 py-0.5 text-xs border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-[#1a3a5c]" />
+                    className="w-full pl-5 pr-1.5 py-0.5 text-xs border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-[#E30613]" />
                 </div>
               </th>
 
@@ -199,7 +199,7 @@ export default function StockView() {
                   <Search size={10} className="absolute left-1.5 top-1/2 -translate-y-1/2 text-gray-300" />
                   <input value={f.designation} onChange={e => setFilter('designation', e.target.value)}
                     placeholder="Filtrer…"
-                    className="w-full pl-5 pr-1.5 py-0.5 text-xs border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-[#1a3a5c]" />
+                    className="w-full pl-5 pr-1.5 py-0.5 text-xs border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-[#E30613]" />
                 </div>
               </th>
 
@@ -249,7 +249,7 @@ export default function StockView() {
                 <td className="px-3 py-2.5"><XAFPrice amount={p.prix_interne} size="sm" className="text-blue-600" /></td>
                 <td className="px-3 py-2.5">
                   <button onClick={() => setSelectedProduit(p)}
-                    className="flex items-center gap-1 text-xs text-gray-400 hover:text-[#1a3a5c] transition-colors"
+                    className="flex items-center gap-1 text-xs text-gray-400 hover:text-[#E30613] transition-colors"
                     title="Voir le trafic entrée/sortie">
                     <BarChart2 size={14} />
                     <span className="hidden xl:inline">Trafic</span>

@@ -20,7 +20,13 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (r) => r.data,
   (err) => {
-    const message = err.response?.data?.message || err.message || 'Erreur réseau';
+    const data = err.response?.data;
+    const message =
+      data?.message ||
+      (Array.isArray(data?.errors) && data.errors.map(e => `${e.path}: ${e.msg}`).join(', ')) ||
+      err.message ||
+      'Erreur réseau';
+    console.error('[API]', err.response?.status, err.config?.url, data);
     return Promise.reject(new Error(message));
   }
 );

@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+﻿import { useEffect, useState, useCallback } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { produitsFiniApi } from '@/api/produitsFinis';
 import { quincaillerieApi } from '@/api/quincaillerie';
@@ -52,7 +52,7 @@ function ProduitQuincaillerieSelect({ value, onChange, index }) {
           onChange={e => { setQuery(e.target.value); setOpen(true); if (!e.target.value) handleClear(); }}
           onFocus={() => query.length >= 2 && setOpen(true)}
           placeholder={`Matériau #${index + 1} — saisir pour chercher…`}
-          className="w-full pl-8 pr-8 py-1.5 text-sm border border-gray-200 rounded-lg focus:ring-1 focus:ring-[#1a3a5c] outline-none"
+          className="w-full pl-8 pr-8 py-1.5 text-sm border border-gray-200 rounded-lg focus:ring-1 focus:ring-[#E30613] outline-none"
         />
         {selected && (
           <button type="button" onClick={handleClear}
@@ -123,7 +123,6 @@ export default function BonProductionForm({ onSuccess }) {
     try {
       const res = await produitsFiniApi.creerBonProduction({
         ...data,
-        technicien_id:    data.technicien_id,
         cout_main_oeuvre: +data.cout_main_oeuvre,
         dimensions: {
           largeur:    +data.largeur    || 0,
@@ -203,7 +202,7 @@ export default function BonProductionForm({ onSuccess }) {
           <label className="form-label mb-0">Matériaux consommés</label>
           <button type="button"
             onClick={() => append({ produit_id: '', quantite: 1 })}
-            className="text-xs text-[#1a3a5c] hover:text-[#e8740c] flex items-center gap-1 transition-colors">
+            className="text-xs text-[#E30613] hover:text-[#E30613] flex items-center gap-1 transition-colors">
             <Plus size={13} /> Ajouter un matériau
           </button>
         </div>
@@ -250,15 +249,6 @@ export default function BonProductionForm({ onSuccess }) {
         />
       </div>
 
-      {/* Technicien */}
-      <div>
-        <label className="form-label">UUID technicien *</label>
-        <input
-          {...register('technicien_id', { required: true })}
-          className="input-base" placeholder="Identifiant Supabase du technicien"
-        />
-      </div>
-
       {/* Résultat calcul coût */}
       {coutCalc && (
         <div className="bg-green-50 border border-green-200 rounded-xl p-4 text-sm">
@@ -269,15 +259,15 @@ export default function BonProductionForm({ onSuccess }) {
             <span>Matériaux :</span>    <XAFPrice amount={coutCalc.cout_materiaux}    size="sm" />
             <span>Main d'œuvre :</span> <XAFPrice amount={coutCalc.cout_main_oeuvre}  size="sm" />
             <span className="font-semibold">Total :</span>
-            <XAFPrice amount={coutCalc.cout_total} size="sm" className="text-[#1a3a5c]" />
+            <XAFPrice amount={coutCalc.cout_total} size="sm" className="text-[#E30613]" />
             <span className="text-green-700 font-semibold">Prix suggéré (+35%) :</span>
-            <XAFPrice amount={coutCalc.prix_vente_suggere} size="sm" className="text-[#e8740c]" />
+            <XAFPrice amount={coutCalc.prix_vente_suggere} size="sm" className="text-[#E30613]" />
           </div>
         </div>
       )}
 
       <button type="submit" disabled={submitting}
-        className="w-full py-2.5 bg-[#1a3a5c] hover:bg-[#0f2540] disabled:opacity-50 text-white font-semibold rounded-xl transition-colors">
+        className="w-full py-2.5 bg-[#E30613] hover:bg-[#B80010] disabled:opacity-50 text-white font-semibold rounded-xl transition-colors">
         {submitting ? 'Envoi…' : 'Soumettre au DG'}
       </button>
     </form>

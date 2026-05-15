@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
@@ -113,7 +113,7 @@ export default function App() {
 
   if (session === undefined) {
     return (
-      <div className="min-h-screen bg-[#1a3a5c] flex items-center justify-center">
+      <div className="min-h-screen bg-[#E30613] flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <div className="w-8 h-8 border-2 border-white/30 border-t-white rounded-full animate-spin" />
           <span className="text-white/70 text-sm">Chargement…</span>

@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
+﻿import { useState, useEffect, useCallback } from 'react';
 
-const C = { primary: '#1a3a5c', accent: '#e8740c' };
+const C = { primary: '#E30613', accent: '#E30613' };
 
 const DECISION_CONFIG = {
   VALIDE:   { color: 'bg-green-100 text-green-800',  icon: '✓' },
@@ -276,7 +276,7 @@ export default function ControleQualite() {
                         {f.of?.reference || '—'} — {f.of?.type_produit}
                       </p>
                       <p className="text-xs text-gray-400">
-                        {new Date(f.date_controle).toLocaleDateString('fr-FR')} · {f.technicien?.email}
+                        {new Date(f.date_controle).toLocaleDateString('fr-FR')}
                       </p>
                     </div>
                   </div>

@@ -98,20 +98,27 @@ router.post('/commande-enligne', async (req, res, next) => {
       client = newClient;
     }
 
+    // Numérotation automatique
+    const { data: numero } = await supabase.rpc('next_numero_commande_pf');
+
     // Crée la commande dans l'ERP
     const { data: commande, error: cmdErr } = await supabase
       .from('commandes_produits_finis')
       .insert({
+        numero,
         client_id: client.id,
+        client_nom,
+        client_telephone,
+        client_email,
         produit_fini_id,
         montant_total,
         acompte_verse: acompte_verse || 0,
-        statut: 'CONFIRMÉE',
+        statut: 'EN_ATTENTE_ACOMPTE',
         source: 'ECOMMERCE',
         reference_externe: commande_ecommerce_id,
         notes,
       })
-      .select('id, reference')
+      .select('id, numero, reference')
       .single();
 
     if (cmdErr) throw cmdErr;
@@ -132,8 +139,9 @@ router.post('/commande-enligne', async (req, res, next) => {
     res.status(201).json({
       success: true,
       commande_id: commande.id,
+      numero: commande.numero,
       reference: commande.reference,
-      numero_suivi: commande.reference,
+      numero_suivi: commande.numero || commande.reference,
     });
   } catch (err) { next(err); }
 });

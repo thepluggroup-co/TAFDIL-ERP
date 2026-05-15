@@ -1,5 +1,20 @@
 import { create } from 'zustand';
 
+const TVA = 0.1925;
+
+export const selectTotaux = (lignes) => {
+  const ht = lignes.reduce(
+    (s, l) => s + l.quantite * l.prix_unitaire * (1 - (l.remise_pct ?? 0) / 100),
+    0
+  );
+  const tva = ht * TVA;
+  return {
+    montant_ht:    Math.round(ht),
+    montant_tva:   Math.round(tva),
+    montant_total: Math.round(ht + tva),
+  };
+};
+
 export const useCartStore = create((set, get) => ({
   lignes: [],        // [{ produit_id, reference, designation, quantite, prix_unitaire, remise_pct }]
   clientType: 'PUBLIC',
@@ -40,15 +55,4 @@ export const useCartStore = create((set, get) => ({
     set(s => ({ lignes: s.lignes.filter(l => l.produit_id !== produit_id) })),
 
   clearCart: () => set({ lignes: [], clientNom: '', modePaiement: 'ESPECES' }),
-
-  get totaux() {
-    const lignes = get().lignes;
-    const ht = lignes.reduce((s, l) => s + l.quantite * l.prix_unitaire * (1 - l.remise_pct / 100), 0);
-    const tva = ht * 0.1925;
-    return {
-      montant_ht: Math.round(ht),
-      montant_tva: Math.round(tva),
-      montant_total: Math.round(ht + tva),
-    };
-  },
 }));

@@ -3,6 +3,7 @@ const { body, param, query } = require('express-validator');
 const { validate } = require('../middleware/errorHandler');
 const { requireRole } = require('../middleware/auth');
 const qc = require('../services/qualiteService');
+const ficheQcPdfService = require('../services/ficheQcPdfService');
 
 const router = express.Router();
 
@@ -102,7 +103,7 @@ router.get('/fiches', async (req, res, next) => {
       .from('fiches_controle_qualite')
       .select(`
         *, of:of_id (reference, type_produit, statut),
-        technicien:technicien_qc_id (email, raw_user_meta_data)
+        technicien_qc_id
       `)
       .order('date_controle', { ascending: false })
       .limit(parseInt(limit || 50));
@@ -116,5 +117,24 @@ router.get('/fiches', async (req, res, next) => {
     next(err);
   }
 });
+
+// GET /api/qualite/fiches/:id/pdf — PDF fiche de contrôle qualité
+router.get('/fiches/:id/pdf',
+  param('id').isUUID(),
+  validate,
+  async (req, res, next) => {
+    try {
+      const pdfBuf = await ficheQcPdfService.genererFicheQcPDF(req.params.id);
+      res.set({
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': `inline; filename="QC-${req.params.id}.pdf"`,
+        'Content-Length': pdfBuf.length,
+      });
+      res.send(pdfBuf);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
 
 module.exports = router;

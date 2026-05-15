@@ -1,17 +1,17 @@
-import clsx from 'clsx';
+﻿import clsx from 'clsx';
 
 export default function StatCard({ label, value, sub, icon: Icon, accent = false }) {
   return (
     <div className={clsx(
       'rounded-xl p-5 border flex items-start gap-4',
-      accent ? 'bg-[#1a3a5c] border-[#1a3a5c] text-white' : 'bg-white border-gray-200'
+      accent ? 'bg-[#E30613] border-[#E30613] text-white' : 'bg-white border-gray-200'
     )}>
       {Icon && (
         <div className={clsx(
           'p-2 rounded-lg',
-          accent ? 'bg-white/10' : 'bg-[#1a3a5c]/10'
+          accent ? 'bg-white/10' : 'bg-[#E30613]/10'
         )}>
-          <Icon size={20} className={accent ? 'text-[#e8740c]' : 'text-[#1a3a5c]'} />
+          <Icon size={20} className={accent ? 'text-white' : 'text-[#E30613]'} />
         </div>
       )}
       <div className="min-w-0">

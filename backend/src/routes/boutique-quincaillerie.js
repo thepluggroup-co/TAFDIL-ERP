@@ -19,7 +19,7 @@ router.post(
     body('client_type').isIn(['PUBLIC', 'INTERNE']).withMessage('client_type doit être PUBLIC ou INTERNE'),
     body('mode_paiement').isIn(['ESPECES', 'CARTE', 'MOBILE_MONEY', 'VIREMENT', 'CREDIT']),
     body('lignes').isArray({ min: 1 }).withMessage('Au moins une ligne requise'),
-    body('lignes.*.produit_id').isUUID(),
+    body('lignes.*.produit_id').matches(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i),
     body('lignes.*.quantite').isFloat({ gt: 0 }),
     body('lignes.*.remise_pct').optional().isFloat({ min: 0, max: 100 }),
   ],
@@ -59,7 +59,7 @@ router.post(
           );
           return {
             ...ligne,
-            prix_unitaire_applique: tarif.prix_final,
+            prix_unitaire_applique: tarif.prix_base, // base price — remise_pct applied once by calculerTotaux + DB generated column
             remise_pct: ligne.remise_pct ?? remise_dg_pct,
           };
         })
@@ -130,8 +130,8 @@ router.post(
         }
       }
 
-      // Enregistrer mouvements de sortie
-      await supabase.from('mouvements_stock').insert(
+      // Enregistrer mouvements de sortie (non-bloquant — la vente est déjà validée)
+      supabase.from('mouvements_stock').insert(
         lignesAvecPrix.map(l => ({
           produit_id:     l.produit_id,
           type_mouvement: 'SORTIE',
@@ -140,7 +140,9 @@ router.post(
           reference_doc:  numero,
           user_id:        vendeur_id,
         }))
-      );
+      ).then(({ error }) => {
+        if (error) console.error('[mouvements_stock] insert failed:', error.message);
+      });
 
       res.status(201).json({
         success: true,
@@ -408,7 +410,12 @@ router.post(
           const { data: numData } = await supabase.rpc('next_numero_vente');
           const numero = numData;
           const venteId = vente.id || uuidv4();
-          const totaux = await pricingService.calculerTotaux(vente.lignes);
+          // Normalise les lignes offline : prix_unitaire_applique peut s'appeler prix_unitaire
+          const lignesNorm = vente.lignes.map(l => ({
+            ...l,
+            prix_unitaire_applique: l.prix_unitaire_applique ?? l.prix_unitaire ?? 0,
+          }));
+          const totaux = await pricingService.calculerTotaux(lignesNorm);
 
           await supabase.from('ventes_comptoir').insert({
             id: venteId,

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { produitsFiniApi } from '@/api/produitsFinis';
 import DevisForm from '@/components/produits-finis/DevisForm';
 import XAFPrice from '@/components/shared/XAFPrice';
@@ -34,7 +34,7 @@ export default function Catalogue() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold text-[#1a3a5c]">Catalogue Produits Finis</h1>
+        <h1 className="text-xl font-bold text-[#E30613]">Catalogue Produits Finis</h1>
       </div>
 
       {/* Filtres type */}
@@ -43,8 +43,8 @@ export default function Catalogue() {
           <button key={t} onClick={() => setTypeFilter(t)}
             className={`px-3 py-1 text-xs rounded-full border transition-colors ${
               typeFilter === t
-                ? 'bg-[#1a3a5c] text-white border-[#1a3a5c]'
-                : 'text-gray-600 border-gray-300 hover:border-[#1a3a5c]'
+                ? 'bg-[#E30613] text-white border-[#E30613]'
+                : 'text-gray-600 border-gray-300 hover:border-[#E30613]'
             }`}>
             {t}
           </button>
@@ -58,17 +58,17 @@ export default function Catalogue() {
         <div className="grid grid-cols-2 xl:grid-cols-3 gap-4">
           {produits.map(p => (
             <div key={p.id} onClick={() => setSelected(p)}
-              className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-md hover:border-[#e8740c] transition-all cursor-pointer group">
+              className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-md hover:border-[#E30613] transition-all cursor-pointer group">
               {p.photos_urls?.[0] ? (
                 <img src={p.photos_urls[0]} alt={p.designation}
                   className="w-full h-40 object-cover" />
               ) : (
-                <div className="w-full h-40 bg-gradient-to-br from-[#1a3a5c]/10 to-[#e8740c]/10 flex items-center justify-center">
-                  <span className="text-3xl text-[#1a3a5c]/30">{p.type?.[0]}</span>
+                <div className="w-full h-40 bg-gradient-to-br from-[#E30613]/10 to-[#E30613]/10 flex items-center justify-center">
+                  <span className="text-3xl text-[#E30613]/30">{p.type?.[0]}</span>
                 </div>
               )}
               <div className="p-3">
-                <p className="font-semibold text-gray-800 text-sm group-hover:text-[#1a3a5c] leading-snug">{p.designation}</p>
+                <p className="font-semibold text-gray-800 text-sm group-hover:text-[#E30613] leading-snug">{p.designation}</p>
                 <p className="text-xs text-gray-400 mt-0.5">{p.reference}</p>
                 {dimStr(p.dimensions) && (
                   <p className="text-xs text-gray-500 mt-1 flex items-center gap-1">
@@ -76,7 +76,7 @@ export default function Catalogue() {
                   </p>
                 )}
                 <div className="flex items-center justify-between mt-2">
-                  <XAFPrice amount={p.prix_vente} size="md" className="text-[#e8740c]" />
+                  <XAFPrice amount={p.prix_vente} size="md" className="text-[#E30613]" />
                   <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">
                     Disponible
                   </span>
@@ -95,7 +95,7 @@ export default function Catalogue() {
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden">
             <div className="flex items-center justify-between px-5 py-4 border-b">
-              <h2 className="font-bold text-[#1a3a5c]">Commande sur mesure</h2>
+              <h2 className="font-bold text-[#E30613]">Commande sur mesure</h2>
               <button onClick={() => setShowDevis(false)}><X size={18} className="text-gray-500" /></button>
             </div>
             <div className="p-5 overflow-y-auto max-h-[75vh]">

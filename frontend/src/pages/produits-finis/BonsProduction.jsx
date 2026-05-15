@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { produitsFiniApi } from '@/api/produitsFinis';
 import BonProductionForm from '@/components/produits-finis/BonProductionForm';
 import XAFPrice from '@/components/shared/XAFPrice';
@@ -53,9 +53,9 @@ export default function BonsProduction() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold text-[#1a3a5c]">Bons de Production</h1>
+        <h1 className="text-xl font-bold text-[#E30613]">Bons de Production</h1>
         <button onClick={() => setShowForm(true)}
-          className="flex items-center gap-1.5 px-4 py-2 bg-[#1a3a5c] text-white text-sm font-semibold rounded-lg hover:bg-[#0f2540] transition-colors">
+          className="flex items-center gap-1.5 px-4 py-2 bg-[#E30613] text-white text-sm font-semibold rounded-lg hover:bg-[#B80010] transition-colors">
           <Plus size={14} /> Nouveau bon
         </button>
       </div>
@@ -76,7 +76,7 @@ export default function BonsProduction() {
                 <td className="px-4 py-2.5 font-medium">{b.produit_fini?.designation || '—'}</td>
                 <td className="px-4 py-2.5 text-xs text-gray-500">{b.produit_fini?.type}</td>
                 <td className="px-4 py-2.5"><XAFPrice amount={b.cout_total} size="sm" /></td>
-                <td className="px-4 py-2.5"><XAFPrice amount={b.prix_vente_suggere} size="sm" className="text-[#e8740c]" /></td>
+                <td className="px-4 py-2.5"><XAFPrice amount={b.prix_vente_suggere} size="sm" className="text-[#E30613]" /></td>
                 <td className="px-4 py-2.5">
                   <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUT_COLOR[b.statut] || 'bg-gray-100 text-gray-600'}`}>
                     {b.statut}
@@ -105,7 +105,7 @@ export default function BonsProduction() {
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl w-full max-w-2xl shadow-2xl">
             <div className="flex items-center justify-between px-5 py-4 border-b">
-              <h2 className="font-bold text-[#1a3a5c]">Déclarer une production</h2>
+              <h2 className="font-bold text-[#E30613]">Déclarer une production</h2>
               <button onClick={() => setShowForm(false)}><X size={18} className="text-gray-500" /></button>
             </div>
             <div className="p-5 overflow-y-auto max-h-[80vh]">

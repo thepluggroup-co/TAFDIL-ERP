@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+﻿import { useEffect, useRef, useState } from 'react';
 import { useLocation, NavLink } from 'react-router-dom';
 import { Bell, WifiOff, LogOut, AlertTriangle, X, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -69,7 +69,7 @@ function UserMenu({ userEmail, initials, onSignOut }) {
         onClick={() => setOpen(v => !v)}
         className="flex items-center gap-2 rounded-lg px-2 py-1 hover:bg-gray-100 transition-colors duration-150"
       >
-        <div className="w-8 h-8 rounded-full bg-[#1a3a5c] text-white text-xs flex items-center justify-center font-bold select-none">
+        <div className="w-8 h-8 rounded-full bg-[#E30613] text-white text-xs flex items-center justify-center font-bold select-none">
           {initials}
         </div>
         {userEmail && (
@@ -211,7 +211,7 @@ function NotificationBell({ conflits }) {
               <NavLink
                 to="/quincaillerie/stock"
                 onClick={() => setOpen(false)}
-                className="text-xs text-[#1a3a5c] font-semibold hover:underline flex items-center gap-1"
+                className="text-xs text-[#E30613] font-semibold hover:underline flex items-center gap-1"
               >
                 Voir le stock complet <ChevronRight size={12} />
               </NavLink>

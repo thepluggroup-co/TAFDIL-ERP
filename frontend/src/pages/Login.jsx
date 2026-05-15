@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import toast from 'react-hot-toast';
@@ -32,14 +32,14 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen bg-[#1a3a5c] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[#E30613] flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8">
         {/* Logo */}
         <div className="flex flex-col items-center mb-8">
           <TafdilLogo size={64} className="mb-3" />
           <h1 className="text-2xl font-bold">
-            <span className="text-[#1a3a5c]">TAFDIL</span>
-            <span className="text-[#e8740c]"> ERP</span>
+            <span className="text-[#E30613]">TAFDIL</span>
+            <span className="text-black"> ERP</span>
           </h1>
           <p className="text-gray-500 text-sm mt-1">Système de gestion intégré</p>
         </div>
@@ -49,14 +49,14 @@ export default function Login() {
           <button
             type="button"
             onClick={() => setMode('login')}
-            className={`flex-1 py-2 text-sm font-medium transition-colors ${mode === 'login' ? 'bg-[#1a3a5c] text-white' : 'text-gray-500 hover:bg-gray-50'}`}
+            className={`flex-1 py-2 text-sm font-medium transition-colors ${mode === 'login' ? 'bg-[#E30613] text-white' : 'text-gray-500 hover:bg-gray-50'}`}
           >
             Connexion
           </button>
           <button
             type="button"
             onClick={() => setMode('signup')}
-            className={`flex-1 py-2 text-sm font-medium transition-colors ${mode === 'signup' ? 'bg-[#1a3a5c] text-white' : 'text-gray-500 hover:bg-gray-50'}`}
+            className={`flex-1 py-2 text-sm font-medium transition-colors ${mode === 'signup' ? 'bg-[#E30613] text-white' : 'text-gray-500 hover:bg-gray-50'}`}
           >
             Créer un compte
           </button>
@@ -72,7 +72,7 @@ export default function Login() {
               required
               value={email}
               onChange={e => setEmail(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1a3a5c]"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E30613]"
               placeholder="vous@tafdil.cm"
             />
           </div>
@@ -87,7 +87,7 @@ export default function Login() {
               minLength={6}
               value={password}
               onChange={e => setPassword(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1a3a5c]"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E30613]"
               placeholder="••••••••"
             />
           </div>
@@ -95,7 +95,7 @@ export default function Login() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#e8740c] hover:bg-[#d06809] text-white font-semibold py-2.5 rounded-lg text-sm transition-colors disabled:opacity-60"
+            className="w-full bg-[#E30613] hover:bg-[#B80010] text-white font-semibold py-2.5 rounded-lg text-sm transition-colors disabled:opacity-60"
           >
             {loading ? '…' : mode === 'login' ? 'Se connecter' : 'Créer le compte'}
           </button>

@@ -1,6 +1,6 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 
-const C = { primary: '#1a3a5c', accent: '#e8740c' };
+const C = { primary: '#E30613', accent: '#E30613' };
 
 const TYPES_PRODUIT = ['PORTAIL', 'PORTE', 'BALCON', 'GARDE_CORPS', 'CLAUSTRA'];
 const MATERIAUX = ['acier'];

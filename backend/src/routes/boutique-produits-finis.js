@@ -5,6 +5,7 @@ const supabase = require('../config/supabase');
 const productionService = require('../services/productionService');
 const devisService = require('../services/devisService');
 const bonLivraisonService = require('../services/bonLivraisonService');
+const bonProductionPdfService = require('../services/bonProductionPdfService');
 const { validate } = require('../middleware/errorHandler');
 
 const router = express.Router();
@@ -16,20 +17,19 @@ const router = express.Router();
 router.post(
   '/bon-production',
   [
-    body('technicien_id').isUUID(),
     body('designation').notEmpty().trim(),
     body('type').isIn(['PORTAIL','PORTE','BALCON','GARDE_CORPS','CLAUSTRA','AUTRE']),
     body('date_debut').isISO8601(),
     body('materiaux_utilises').isArray({ min: 0 }),
-    body('materiaux_utilises.*.produit_id').isUUID(),
+    body('materiaux_utilises.*.produit_id').matches(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i),
     body('materiaux_utilises.*.quantite').isFloat({ gt: 0 }),
     body('cout_main_oeuvre').isFloat({ min: 0 }),
   ],
   validate,
   async (req, res, next) => {
     try {
+      const technicien_id = req.user.id;
       const {
-        technicien_id,
         designation,
         type,
         dimensions = {},
@@ -481,8 +481,8 @@ router.get(
           reference, date_debut, date_fin, cout_materiaux, cout_main_oeuvre, cout_total,
           materiaux_utilises,
           produit_fini:produit_fini_id(reference, designation, type, prix_vente, statut),
-          technicien:technicien_id(raw_user_meta_data),
-          valideur:valide_par(raw_user_meta_data)
+          technicien_id,
+          valide_par
         `)
         .eq('produit_fini_id', req.params.id)
         .single();
@@ -499,8 +499,8 @@ router.get(
           bon_production: bp.reference,
           periode: { debut: bp.date_debut, fin: bp.date_fin },
           produit_fini: bp.produit_fini,
-          technicien: bp.technicien?.raw_user_meta_data?.full_name || 'N/A',
-          valide_par: bp.valideur?.raw_user_meta_data?.full_name || 'N/A',
+          technicien: bp.technicien_id || 'N/A',
+          valide_par: bp.valide_par || 'N/A',
           couts: {
             materiaux: bp.cout_materiaux,
             main_oeuvre: bp.cout_main_oeuvre,
@@ -517,12 +517,43 @@ router.get(
   }
 );
 
+// ============================================================
+// GET /bon-production/:id/pdf
+// PDF du bon de production avec charte TAFDIL
+// ============================================================
+router.get(
+  '/bon-production/:id/pdf',
+  [param('id').isUUID()],
+  validate,
+  async (req, res, next) => {
+    try {
+      const pdfBuf = await bonProductionPdfService.genererBonProductionPDF(req.params.id);
+
+      const { data: bon } = await supabase
+        .from('bons_production')
+        .select('reference')
+        .eq('id', req.params.id)
+        .single();
+
+      res.set({
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': `inline; filename="BP-${bon?.reference || req.params.id}.pdf"`,
+        'Content-Length': pdfBuf.length,
+      });
+      res.send(pdfBuf);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
 // ────────────────────────────────────────────────────────────
 // Utilitaire interne : PDF devis (appelé par GET /devis/:id?format=pdf)
 // ────────────────────────────────────────────────────────────
 async function genererDevisPDF(devis) {
   const PDFDocument = require('pdfkit');
   const supabaseLocal = require('../config/supabase');
+  const { TAFDIL } = require('../services/pdfBranding');
 
   const { data: params } = await supabaseLocal
     .from('parametres_systeme')
@@ -537,19 +568,21 @@ async function genererDevisPDF(devis) {
     doc.on('error', reject);
 
     const W = 495.28;
-    const PRIMARY = '#1a3a5c';
-    const ACCENT  = '#e8740c';
+    const PRIMARY = TAFDIL.rouge;
+    const ACCENT  = TAFDIL.rouge;
 
     // En-tête
-    doc.rect(0, 0, 595.28, 80).fill(PRIMARY);
-    doc.fillColor('white').font('Helvetica-Bold').fontSize(18)
-      .text(cfg.raison_sociale || 'TAFDIL SARL', 50, 18, { width: W * 0.55 });
-    doc.font('Helvetica').fontSize(8).fillColor('#cce0ff')
-      .text(`${cfg.ville || 'Douala'} | ${cfg.telephone || ''}`, 50, 42);
-    doc.fillColor(ACCENT).font('Helvetica-Bold').fontSize(20)
-      .text('DEVIS', 50 + W * 0.6, 15, { width: W * 0.4, align: 'right' });
-    doc.fillColor('white').font('Helvetica').fontSize(10)
-      .text(devis.numero, 50 + W * 0.6, 42, { width: W * 0.4, align: 'right' });
+    doc.rect(0, 0, 595.28, 85).fill(PRIMARY);
+    doc.fillColor('white').font('Helvetica-Bold').fontSize(20)
+      .text(cfg.raison_sociale || TAFDIL.raison_sociale, 50, 14, { width: W * 0.6 });
+    doc.font('Helvetica').fontSize(8)
+      .text(TAFDIL.activite, 50, 40)
+      .text(`${cfg.ville || 'Douala'} | ${cfg.telephone || TAFDIL.tel1}`, 50, 52)
+      .text(TAFDIL.email, 50, 64);
+    doc.fillColor('white').font('Helvetica-Bold').fontSize(22)
+      .text('DEVIS', 50 + W * 0.58, 14, { width: W * 0.42, align: 'right' });
+    doc.font('Helvetica').fontSize(10)
+      .text(devis.numero, 50 + W * 0.58, 46, { width: W * 0.42, align: 'right' });
 
     let y = 100;
 
@@ -590,7 +623,7 @@ async function genererDevisPDF(devis) {
     y += 10;
 
     // Tableau financier
-    doc.rect(50, y, W, 28).fill('#f0f4f8');
+    doc.rect(50, y, W, 28).fill(TAFDIL.gris_clair);
     doc.fillColor(PRIMARY).font('Helvetica-Bold').fontSize(9)
       .text('DÉSIGNATION', 60, y + 9, { width: W * 0.5 })
       .text('MONTANT', 60, y + 9, { width: W - 20, align: 'right' });
@@ -619,10 +652,10 @@ async function genererDevisPDF(devis) {
         'Les dimensions définitives sont à valider avant mise en fabrication.', 50, y, { width: W });
 
     // Pied de page
-    doc.rect(0, 791, 595.28, 50).fill(PRIMARY);
-    doc.fillColor('#cce0ff').font('Helvetica').fontSize(7)
+    doc.rect(0, 791, 595.28, 50).fill(TAFDIL.noir);
+    doc.fillColor('white').font('Helvetica').fontSize(7)
       .text(
-        `${cfg.raison_sociale || 'TAFDIL SARL'} — ${cfg.ville || 'Douala'} | Devis généré le ${new Date().toLocaleDateString('fr-CM')}`,
+        `${TAFDIL.raison_sociale} | ${TAFDIL.adresse} | ${TAFDIL.tel1} | ${TAFDIL.email} — Devis généré le ${new Date().toLocaleDateString('fr-CM')}`,
         50, 807, { width: W, align: 'center' }
       );
 
