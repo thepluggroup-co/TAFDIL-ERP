@@ -1,14 +1,13 @@
 import { useMemo, useState } from 'react';
-import { useCartStore } from '@/stores/useCartStore';
+import { useCartStore, selectTotaux } from '@/stores/useCartStore';
 import { quincaillerieApi } from '@/api/quincaillerie';
 import XAFPrice from '@/components/shared/XAFPrice';
 import { Trash2, Printer, ChevronDown, Minus, Plus } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const MODES = ['ESPECES', 'CARTE', 'MOBILE_MONEY', 'VIREMENT', 'CREDIT'];
-const TVA   = 0.1925;
 
-export default function CaisseForm({ vendeurId, onSuccess }) {
+export default function CaisseForm({ onSuccess }) {
   const {
     lignes, clientNom, modePaiement,
     setClientNom, setModePaiement,
@@ -17,32 +16,16 @@ export default function CaisseForm({ vendeurId, onSuccess }) {
 
   const [submitting, setSubmitting] = useState(false);
 
-  // Calcul réactif du total à chaque changement de lignes
-  const totaux = useMemo(() => {
-    const ht = lignes.reduce(
-      (s, l) => s + l.quantite * l.prix_unitaire * (1 - (l.remise_pct ?? 0) / 100),
-      0
-    );
-    const tva = ht * TVA;
-    return {
-      montant_ht:    Math.round(ht),
-      montant_tva:   Math.round(tva),
-      montant_total: Math.round(ht + tva),
-    };
-  }, [lignes]);
+  const totaux = useMemo(() => selectTotaux(lignes), [lignes]);
 
   const submit = async () => {
     if (!lignes.length) return toast.error('Panier vide');
-    if (!vendeurId || vendeurId === 'replace-with-auth-user-id') {
-      return toast.error('Utilisateur non identifié — veuillez vous reconnecter');
-    }
     setSubmitting(true);
     try {
       const res = await quincaillerieApi.creerVente({
-        vendeur_id:     vendeurId,
-        client_type:    'PUBLIC',   // vente comptoir = toujours client externe
-        client_nom:     clientNom || null,
-        mode_paiement:  modePaiement,
+        client_type:   'PUBLIC',   // vente comptoir = toujours client externe
+        client_nom:    clientNom || null,
+        mode_paiement: modePaiement,
         lignes: lignes.map(l => ({
           produit_id: l.produit_id,
           quantite:   l.quantite,
@@ -70,10 +53,16 @@ export default function CaisseForm({ vendeurId, onSuccess }) {
       clearCart();
       onSuccess?.(res);
     } catch (err) {
-      if (err.message?.toLowerCase().includes('conflit')) {
-        toast.error('Conflit de stock — quantité insuffisante');
+      console.error('[CaisseForm] erreur validation:', err);
+      const msg = err.message || '';
+      if (msg.toLowerCase().includes('conflit') || msg.toLowerCase().includes('insuffisant')) {
+        toast.error('Stock insuffisant pour un ou plusieurs articles');
+      } else if (msg.toLowerCase().includes('401') || msg.toLowerCase().includes('token') || msg.toLowerCase().includes('authentif')) {
+        toast.error('Session expirée — veuillez vous reconnecter');
+      } else if (msg.toLowerCase().includes('réseau') || msg.toLowerCase().includes('network') || msg.toLowerCase().includes('fetch')) {
+        toast.error('Serveur inaccessible — vérifiez votre connexion');
       } else {
-        toast.error(err.message || 'Erreur lors de la vente');
+        toast.error(msg || 'Erreur lors de la vente');
       }
     } finally {
       setSubmitting(false);

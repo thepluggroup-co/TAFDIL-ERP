@@ -123,7 +123,6 @@ export default function BonProductionForm({ onSuccess }) {
     try {
       const res = await produitsFiniApi.creerBonProduction({
         ...data,
-        technicien_id:    data.technicien_id,
         cout_main_oeuvre: +data.cout_main_oeuvre,
         dimensions: {
           largeur:    +data.largeur    || 0,
@@ -247,15 +246,6 @@ export default function BonProductionForm({ onSuccess }) {
         <input
           {...register('cout_main_oeuvre', { required: true, min: 0 })}
           type="number" className="input-base" placeholder="0"
-        />
-      </div>
-
-      {/* Technicien */}
-      <div>
-        <label className="form-label">UUID technicien *</label>
-        <input
-          {...register('technicien_id', { required: true })}
-          className="input-base" placeholder="Identifiant Supabase du technicien"
         />
       </div>
 

@@ -16,7 +16,7 @@ const PRIORITE_LABEL = { 1: 'Urgent', 2: 'Normal', 3: 'Faible' };
 const PRIORITE_COLOR = { 1: 'text-red-600 font-bold', 2: 'text-gray-700', 3: 'text-gray-400' };
 
 function OFCard({ of, onExploser, onStatut }) {
-  const tech = of.technicien?.raw_user_meta_data?.nom || of.technicien?.email || '—';
+  const tech = of.technicien_assigne_id ? `Tech ${of.technicien_assigne_id.slice(0, 8)}…` : '—';
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-3 shadow-sm hover:shadow-md transition-shadow">
       <div className="flex justify-between items-start mb-1">

@@ -102,7 +102,7 @@ router.get('/fiches', async (req, res, next) => {
       .from('fiches_controle_qualite')
       .select(`
         *, of:of_id (reference, type_produit, statut),
-        technicien:technicien_qc_id (email, raw_user_meta_data)
+        technicien_qc_id
       `)
       .order('date_controle', { ascending: false })
       .limit(parseInt(limit || 50));

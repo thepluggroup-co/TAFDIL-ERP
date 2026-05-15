@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useStockStore } from '@/stores/useStockStore';
 import { useCartStore } from '@/stores/useCartStore';
-import { supabase } from '@/lib/supabase';
 import CaisseForm from '@/components/quincaillerie/CaisseForm';
 import StockBadge from '@/components/shared/StockBadge';
 import XAFPrice from '@/components/shared/XAFPrice';
@@ -26,14 +25,6 @@ export default function VenteComptoir() {
 
   const [search,    setSearch]    = useState('');
   const [categorie, setCategorie] = useState('');
-  const [vendeurId, setVendeurId] = useState('');
-
-  // Récupérer l'ID de l'utilisateur connecté (remplace le placeholder)
-  useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (user) setVendeurId(user.id);
-    });
-  }, []);
 
   // Re-fetch lors du changement de catégorie
   useEffect(() => {
@@ -129,7 +120,7 @@ export default function VenteComptoir() {
         <h2 className="font-bold text-[#1a3a5c] text-sm mb-3 pb-2 border-b border-gray-100">
           Panier
         </h2>
-        <CaisseForm vendeurId={vendeurId} onSuccess={refetch} />
+        <CaisseForm onSuccess={refetch} />
       </div>
     </div>
   );

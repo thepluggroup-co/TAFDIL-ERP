@@ -16,7 +16,6 @@ const router = express.Router();
 router.post(
   '/bon-production',
   [
-    body('technicien_id').isUUID(),
     body('designation').notEmpty().trim(),
     body('type').isIn(['PORTAIL','PORTE','BALCON','GARDE_CORPS','CLAUSTRA','AUTRE']),
     body('date_debut').isISO8601(),
@@ -28,8 +27,8 @@ router.post(
   validate,
   async (req, res, next) => {
     try {
+      const technicien_id = req.user.id;
       const {
-        technicien_id,
         designation,
         type,
         dimensions = {},
@@ -481,8 +480,8 @@ router.get(
           reference, date_debut, date_fin, cout_materiaux, cout_main_oeuvre, cout_total,
           materiaux_utilises,
           produit_fini:produit_fini_id(reference, designation, type, prix_vente, statut),
-          technicien:technicien_id(raw_user_meta_data),
-          valideur:valide_par(raw_user_meta_data)
+          technicien_id,
+          valide_par
         `)
         .eq('produit_fini_id', req.params.id)
         .single();
@@ -499,8 +498,8 @@ router.get(
           bon_production: bp.reference,
           periode: { debut: bp.date_debut, fin: bp.date_fin },
           produit_fini: bp.produit_fini,
-          technicien: bp.technicien?.raw_user_meta_data?.full_name || 'N/A',
-          valide_par: bp.valideur?.raw_user_meta_data?.full_name || 'N/A',
+          technicien: bp.technicien_id || 'N/A',
+          valide_par: bp.valide_par || 'N/A',
           couts: {
             materiaux: bp.cout_materiaux,
             main_oeuvre: bp.cout_main_oeuvre,

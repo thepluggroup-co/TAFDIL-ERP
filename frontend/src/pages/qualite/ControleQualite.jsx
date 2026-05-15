@@ -276,7 +276,7 @@ export default function ControleQualite() {
                         {f.of?.reference || '—'} — {f.of?.type_produit}
                       </p>
                       <p className="text-xs text-gray-400">
-                        {new Date(f.date_controle).toLocaleDateString('fr-FR')} · {f.technicien?.email}
+                        {new Date(f.date_controle).toLocaleDateString('fr-FR')}
                       </p>
                     </div>
                   </div>
