@@ -258,6 +258,7 @@ router.post(
       const { vente_id } = req.body;
 
       // Récupération vente + lignes + désignations produits
+      // Note: pas de join auth.users (schéma différent) — on récupère le vendeur séparément
       const { data: vente, error: errVente } = await supabase
         .from('ventes_comptoir')
         .select(`
@@ -265,8 +266,7 @@ router.post(
           lignes:ventes_comptoir_lignes (
             *,
             produit:produits ( designation )
-          ),
-          vendeur:vendeur_id ( raw_user_meta_data )
+          )
         `)
         .eq('id', vente_id)
         .single();
@@ -281,10 +281,13 @@ router.post(
         designation: l.produit?.designation || 'Produit',
       }));
 
-      const vendeurNom =
-        vente.vendeur?.raw_user_meta_data?.full_name ||
-        vente.vendeur?.raw_user_meta_data?.name ||
-        'Caissier';
+      // Récupération nom vendeur via admin API (auth.users inaccessible via PostgREST public)
+      let vendeurNom = 'Caissier';
+      try {
+        const { data: authData } = await supabase.auth.admin.getUserById(vente.vendeur_id);
+        const meta = authData?.user?.user_metadata;
+        vendeurNom = meta?.full_name || meta?.name || authData?.user?.email || 'Caissier';
+      } catch {}
 
       const pdfBuffer = await ticketService.genererTicketPDF({
         ...vente,

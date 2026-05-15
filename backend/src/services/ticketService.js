@@ -35,7 +35,7 @@ async function genererTicketPDF(vente) {
     .from('parametres_systeme')
     .select('cle, valeur');
 
-  const cfg = Object.fromEntries(params.map(p => [p.cle, p.valeur]));
+  const cfg = Object.fromEntries((params || []).map(p => [p.cle, p.valeur]));
 
   const urlRecu = `${cfg.base_url || 'https://erp.tafdil.cm'}/recus/${vente.id}`;
   const qrBuffer = await QRCode.toBuffer(urlRecu, {
