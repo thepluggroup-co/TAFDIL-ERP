@@ -1,17 +1,20 @@
-﻿import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { produitsFiniApi } from '@/api/produitsFinis';
 import { supabase } from '@/lib/supabase';
 import XAFPrice from '@/components/shared/XAFPrice';
-import { FileText, Truck, Globe, RefreshCw } from 'lucide-react';
+import { FileText, Truck, Globe, RefreshCw, X, DollarSign } from 'lucide-react';
 import toast from 'react-hot-toast';
 import dayjs from 'dayjs';
 
 const STATUT_COLOR = {
   EN_ATTENTE_ACOMPTE: 'bg-amber-100 text-amber-700',
-  EN_FABRICATION:     'bg-blue-100  text-blue-700',
+  CONFIRMÉE:          'bg-sky-100 text-sky-700',
+  EN_FABRICATION:     'bg-blue-100 text-blue-700',
   PRET:               'bg-purple-100 text-purple-700',
-  LIVRE:              'bg-green-100  text-green-700',
-  ANNULE:             'bg-red-100    text-red-700',
+  PAYEE:              'bg-teal-100 text-teal-700',
+  LIVRE:              'bg-green-100 text-green-700',
+  ANNULE:             'bg-red-100 text-red-700',
+  ANNULEE:            'bg-red-100 text-red-700',
 };
 
 const TABS = [
@@ -19,10 +22,15 @@ const TABS = [
   { key: 'ERP',       label: 'ERP interne' },
 ];
 
+const MODAL_BL_INIT    = { cmd: null, livreur: '', adresse: '', saving: false };
+const MODAL_ACC_INIT   = { cmd: null, montant: '', saving: false };
+
 export default function Commandes() {
-  const [commandes, setCommandes] = useState([]);
-  const [loading,   setLoading]   = useState(true);
-  const [tab,       setTab]       = useState('ECOMMERCE');  // vue e-commerce par défaut
+  const [commandes,    setCommandes]    = useState([]);
+  const [loading,      setLoading]      = useState(true);
+  const [tab,          setTab]          = useState('ECOMMERCE');
+  const [blModal,      setBlModal]      = useState(MODAL_BL_INIT);
+  const [acompteModal, setAcompteModal] = useState(MODAL_ACC_INIT);
 
   const fetchCommandes = async () => {
     setLoading(true);
@@ -33,7 +41,7 @@ export default function Commandes() {
         produit:produit_fini_id(designation, type),
         devis:devis_id(numero)
       `)
-      .eq('source_canal', tab)          // filtre e-commerce vs ERP
+      .eq('source', tab)
       .order('created_at', { ascending: false })
       .limit(100);
     setCommandes(data || []);
@@ -42,19 +50,37 @@ export default function Commandes() {
 
   useEffect(() => { fetchCommandes(); }, [tab]);
 
-  const handleBL = async (cmd) => {
-    const livreur = prompt('UUID du livreur :');
-    if (!livreur) return;
-    const adresse = prompt('Adresse de livraison :') || '';
+  const handleBL = async () => {
+    const { cmd, livreur, adresse } = blModal;
+    if (!livreur.trim()) { toast.error('Livreur requis'); return; }
+    setBlModal(s => ({ ...s, saving: true }));
     try {
       const res = await produitsFiniApi.creerBonLivraison(cmd.id, {
-        livreur_id: livreur,
-        adresse_livraison: adresse,
+        livreur_id: livreur.trim(),
+        adresse_livraison: adresse.trim(),
       });
-      toast.success(`BL ${res.numero} créé`);
+      toast.success(`BL ${res.data?.numero || ''} créé`);
+      setBlModal(MODAL_BL_INIT);
       fetchCommandes();
     } catch (err) {
       toast.error(err.message);
+      setBlModal(s => ({ ...s, saving: false }));
+    }
+  };
+
+  const handleAcompte = async () => {
+    const { cmd, montant } = acompteModal;
+    const montantNum = parseFloat(montant);
+    if (!montantNum || montantNum <= 0) { toast.error('Montant invalide'); return; }
+    setAcompteModal(s => ({ ...s, saving: true }));
+    try {
+      await produitsFiniApi.enregistrerAcompte(cmd.id, { montant: montantNum });
+      toast.success('Acompte enregistré');
+      setAcompteModal(MODAL_ACC_INIT);
+      fetchCommandes();
+    } catch (err) {
+      toast.error(err.message);
+      setAcompteModal(s => ({ ...s, saving: false }));
     }
   };
 
@@ -74,7 +100,7 @@ export default function Commandes() {
         <div>
           <h1 className="text-xl font-bold text-[#E30613]">Commandes</h1>
           <p className="text-xs text-gray-400 mt-0.5">
-            Produits finis & quincaillerie — plateforme e-commerce
+            Produits finis — suivi e-commerce & ERP interne
           </p>
         </div>
         <button onClick={fetchCommandes}
@@ -104,7 +130,7 @@ export default function Commandes() {
       {tab === 'ECOMMERCE' && (
         <div className="flex items-center gap-2 text-xs text-blue-700 bg-blue-50 border border-blue-200 px-3 py-2 rounded-lg">
           <Globe size={13} />
-          Commandes reçues via la plateforme e-commerce (produits finis + quincaillerie en ligne)
+          Commandes reçues via la plateforme e-commerce (produits finis en ligne)
         </div>
       )}
 
@@ -131,7 +157,7 @@ export default function Commandes() {
             ) : commandes.map(c => (
               <tr key={c.id} className="hover:bg-gray-50 transition-colors">
                 <td className="px-4 py-2.5 font-mono text-xs font-semibold text-[#E30613]">
-                  {c.numero}
+                  {c.numero || c.reference_externe || '—'}
                 </td>
                 <td className="px-4 py-2.5">
                   <p className="font-medium">{c.client_nom || '—'}</p>
@@ -171,8 +197,18 @@ export default function Commandes() {
                         <FileText size={14} />
                       </button>
                     )}
+                    {c.statut === 'EN_ATTENTE_ACOMPTE' && (
+                      <button
+                        onClick={() => setAcompteModal({ cmd: c, montant: String(c.acompte_attendu || ''), saving: false })}
+                        title="Enregistrer acompte"
+                        className="text-gray-400 hover:text-green-600 transition-colors">
+                        <DollarSign size={14} />
+                      </button>
+                    )}
                     {c.statut === 'PRET' && !c.bon_livraison_id && (
-                      <button onClick={() => handleBL(c)} title="Créer bon de livraison"
+                      <button
+                        onClick={() => setBlModal({ cmd: c, livreur: '', adresse: '', saving: false })}
+                        title="Créer bon de livraison"
                         className="text-gray-400 hover:text-[#E30613] transition-colors">
                         <Truck size={14} />
                       </button>
@@ -184,6 +220,86 @@ export default function Commandes() {
           </tbody>
         </table>
       </div>
+
+      {/* Modal — Bon de livraison */}
+      {blModal.cmd && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-semibold text-gray-900">Créer bon de livraison</h2>
+              <button onClick={() => setBlModal(MODAL_BL_INIT)}
+                className="text-gray-400 hover:text-gray-600"><X size={18} /></button>
+            </div>
+            <p className="text-sm text-gray-500 mb-4">
+              Commande <span className="font-mono font-semibold text-[#E30613]">{blModal.cmd.numero}</span>
+            </p>
+            <div className="space-y-3">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Livreur (nom ou ID)</label>
+                <input type="text" value={blModal.livreur}
+                  onChange={e => setBlModal(s => ({ ...s, livreur: e.target.value }))}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E30613]"
+                  placeholder="Nom du livreur ou UUID employé" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Adresse de livraison</label>
+                <input type="text" value={blModal.adresse}
+                  onChange={e => setBlModal(s => ({ ...s, adresse: e.target.value }))}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E30613]"
+                  placeholder="Quartier, ville, repère…" />
+              </div>
+            </div>
+            <div className="flex gap-2 mt-5">
+              <button onClick={() => setBlModal(MODAL_BL_INIT)}
+                className="flex-1 border border-gray-200 rounded-lg py-2 text-sm text-gray-600 hover:bg-gray-50">
+                Annuler
+              </button>
+              <button onClick={handleBL} disabled={blModal.saving}
+                className="flex-1 bg-[#E30613] hover:bg-[#B80010] text-white rounded-lg py-2 text-sm font-medium disabled:opacity-60">
+                {blModal.saving ? 'Création…' : 'Créer BL'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal — Acompte */}
+      {acompteModal.cmd && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-sm p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-semibold text-gray-900">Enregistrer acompte</h2>
+              <button onClick={() => setAcompteModal(MODAL_ACC_INIT)}
+                className="text-gray-400 hover:text-gray-600"><X size={18} /></button>
+            </div>
+            <p className="text-sm text-gray-500 mb-1">
+              Commande <span className="font-mono font-semibold text-[#E30613]">{acompteModal.cmd.numero}</span>
+            </p>
+            {acompteModal.cmd.acompte_attendu > 0 && (
+              <p className="text-xs text-amber-600 mb-4">
+                Acompte attendu : <XAFPrice amount={acompteModal.cmd.acompte_attendu} size="xs" />
+              </p>
+            )}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Montant reçu (XAF)</label>
+              <input type="number" min="0" value={acompteModal.montant}
+                onChange={e => setAcompteModal(s => ({ ...s, montant: e.target.value }))}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E30613]"
+                placeholder="0" />
+            </div>
+            <div className="flex gap-2 mt-5">
+              <button onClick={() => setAcompteModal(MODAL_ACC_INIT)}
+                className="flex-1 border border-gray-200 rounded-lg py-2 text-sm text-gray-600 hover:bg-gray-50">
+                Annuler
+              </button>
+              <button onClick={handleAcompte} disabled={acompteModal.saving}
+                className="flex-1 bg-[#E30613] hover:bg-[#B80010] text-white rounded-lg py-2 text-sm font-medium disabled:opacity-60">
+                {acompteModal.saving ? 'Enregistrement…' : 'Confirmer'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
