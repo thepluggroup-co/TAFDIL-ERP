@@ -19,7 +19,7 @@ router.post(
     body('client_type').isIn(['PUBLIC', 'INTERNE']).withMessage('client_type doit être PUBLIC ou INTERNE'),
     body('mode_paiement').isIn(['ESPECES', 'CARTE', 'MOBILE_MONEY', 'VIREMENT', 'CREDIT']),
     body('lignes').isArray({ min: 1 }).withMessage('Au moins une ligne requise'),
-    body('lignes.*.produit_id').isUUID(),
+    body('lignes.*.produit_id').matches(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i),
     body('lignes.*.quantite').isFloat({ gt: 0 }),
     body('lignes.*.remise_pct').optional().isFloat({ min: 0, max: 100 }),
   ],

@@ -20,7 +20,7 @@ router.post(
     body('type').isIn(['PORTAIL','PORTE','BALCON','GARDE_CORPS','CLAUSTRA','AUTRE']),
     body('date_debut').isISO8601(),
     body('materiaux_utilises').isArray({ min: 0 }),
-    body('materiaux_utilises.*.produit_id').isUUID(),
+    body('materiaux_utilises.*.produit_id').matches(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i),
     body('materiaux_utilises.*.quantite').isFloat({ gt: 0 }),
     body('cout_main_oeuvre').isFloat({ min: 0 }),
   ],
